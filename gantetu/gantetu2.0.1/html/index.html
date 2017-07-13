@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>甘特图2.0.1</title>
+    <script type="text/javascript" src="../plugins/jquery-3.2.1.js"></script>
+    <!--<script type="text/javascript" src="../js/control.js"></script>-->
+    <!--<script type="text/javascript" src="../js/main1.js"></script>-->
+    <script id="hourShow" type="text/javascript" src="../js/main.js"></script>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<h3>Diagram</h3>
+<div id="todayTime"><h4>当前时间:</h4></div>
+<form>
+    <label>事项名：</label><input class="input_text" type="text" id="taskName" placeholder="请输入正确的事项名...">
+    <label>开始时间：</label><input class="input_text" type="text" id="from" placeholder="请输入开始时间，如2017-7-11">
+    <label>结束时间：</label><input class="input_text" type="text" id="to" placeholder="请输入结束时间，如2017-7-11">
+    <!--<label>工作量(天)：</label><input type="text" class="input_text" id="workload" placeholder="请输入正确的工作量...">-->
+    <input type="button" id="createTask" value="创建" onclick="addTask();">
+    <input type="button" id="tableShow" value="刷新表格" onclick="showTable();">
+    <input type="button" id="changeHour" value="小时" onclick="showHour();">
+    <input type="button" id="changeDay" value="天" onclick="showDay();">
+</form>
+<div id="taskShow" class="Tshow" style="width: 100%;height: 250px;overflow: auto"></div>
+<div style="position:relative" class="Gantt" id="GanttChart"></div>
+</body>
+</html>

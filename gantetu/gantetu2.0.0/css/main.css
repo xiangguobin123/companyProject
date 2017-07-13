@@ -1,0 +1,260 @@
+body{
+    margin: 0 auto;
+    padding: 0;
+}
+div{
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+input{
+    font-size: 15px;
+}
+.main{
+    position: absolute;
+    margin-left: 300px;
+    width: 1000px;
+    height: auto;
+}
+.top{
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 15px;
+    border: 1px solid black;
+    text-align: center;
+    background-color: #C8FFFF;
+}
+.center{
+    position: absolute;
+    margin-top: 50px;
+    width: 100%;
+    height: 600px;
+    border: 1px solid black;
+    background-color: #eeeeee;
+}
+.today_time{
+    text-align: center;
+}
+.time_axis{
+    position: relative;
+    float: left;
+    width: 100%;
+}
+.time_name{
+    position: relative;
+    float: left;
+    width: 180px;
+    height: 150px;
+    text-align: center;
+    line-height: 150px;
+}
+.time_point{
+    background-color: #408080;
+    position: relative;
+    float: left;
+    width: 800px;
+    height: 150px;
+}
+.time_year{
+    position: relative;
+    width: 800px;
+    height: 50px;
+    line-height: 50px;
+}
+.time_month{
+    position: relative;
+    width: 800px;
+    height: 50px;
+    line-height: 50px;
+}
+.time_day{
+    position: relative;
+    width: 800px;
+    height: 50px;
+    line-height: 50px;
+}
+.time_hour{
+    position: relative;
+    width: 800px;
+    height: 50px;
+    line-height: 50px;
+}
+.gantt_{
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 400px;
+}
+.item_name{
+    position: relative;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    float: left;
+    width: 180px;
+    height: 400px;
+    background-color: #eeeeee;
+}
+.gantt_area{
+    position: relative;
+    overflow:scroll;
+    float: left;
+    width: 800px;
+    height: 400px;
+    background-color: #cccccc;
+}
+.bottom{
+    position: absolute;
+    margin-top: 650px;
+    width: 100%;
+    height: 100px;
+    font-size: 20px;
+    line-height: 100px;
+    border: 1px solid black;
+    text-align: center;
+    background-color: orange;
+}
+.item_table{
+    position: absolute;
+    margin-top: 750px;
+    width: 100%;
+    height: auto;
+    font-size: 20px;
+    border: 1px solid black;
+    text-align: center;
+}
+.bar_type{
+    overflow: visible;
+    display: block;
+    float: left;
+    width: auto;
+    height: 30px;
+    -moz-user-select: none;         //设置元素不可选取
+    -khtml-user-select: none;
+    user-select: none;
+    /*background-color: red;*/
+}
+.gantt_bulk{
+    overflow: hidden;
+    display: block;
+    float: left;
+    position: relative;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    font-size: 15px;
+    background-color: orange;
+    /*border-left: 1px solid black;
+    border-right: 1px solid black;*/
+    cursor: move;
+    -moz-user-select:none;      //firefox文字不可选取
+}
+.drag_gantt{
+    position: relative;
+    float: left;
+    width: 5px;
+    height: 30px;
+    cursor: e-resize;
+}
+.drag_gantt:hover{
+    background-color: blue;
+}
+.delete_gantt{
+    float: left;
+    display: block;
+    opacity: 0;
+    line-height: 20px;
+    position: relative;
+    /*text-align: center;*/
+    font-size: 20px;
+    /*border-radius: 100%;*/
+    width: 20px;
+    height: 30px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    /*border: 1px solid black;*/
+}
+.delete_gantt:hover{
+    opacity: 1;
+    background-color: red;
+    border-top: 1px solid red;
+    border-bottom: 1px solid red;
+}
+.alert_drag{
+    font-size: 15px;
+    position: absolute;
+    display: none;
+    width: 100px;
+    height: 100px;
+}
+.item_name_bar{
+    position: relative;
+    overflow: hidden;
+    width: 200px;
+    height: 30px;
+    font-size: 18px;
+    text-align: center;
+    line-height: 30px;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+    background-color: blanchedalmond;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.items_div{
+    display: inline-block;
+    position: relative;
+    background-color: #408080;
+    width: 0;
+    height: 0;
+    cursor: move;
+}
+.zu_div{
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background-color: green;
+    height: 30px;
+    text-align: center;
+}
+.zu_gantt_bulk{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+    float: left;
+    position: relative;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 15px;
+    background-color: green;
+    /*border-left: 1px solid black;
+    border-right: 1px solid black;*/
+    cursor: move;
+    -moz-user-select:none;      //firefox文字不可选取
+}
+.zu_item_name{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+    width: 200px;
+    height:auto;
+}
+.zu_name{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+    font-size: 18px;
+    width: 200px;
+    background-color: green;
+    text-align: center;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}

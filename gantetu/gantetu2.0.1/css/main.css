@@ -1,0 +1,91 @@
+body{
+    margin:0 auto;
+}
+.input_text{
+    width: 15em;
+}
+
+table{
+    margin: 0;
+    padding: 0;
+}
+
+.Gantt
+{
+    font-family:tahoma, arial, verdana;
+    font-size:11px;
+}
+
+.GTaskTitle
+{
+    font-family:tahoma, arial, verdana;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.GMonth
+{
+    padding-left:5px;
+    font-family:tahoma, arial, verdana;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.GToday
+{
+    background-color: red;
+}
+
+.GWeekend
+{
+    font-family:tahoma, arial, verdana;
+    font-size:11px;
+    background-color:#5E5E5E;
+    text-align:center;
+}
+
+.GDay
+{
+    font-family:tahoma, arial, verdana;
+    font-size:11px;
+    text-align:center;
+}
+
+.GTask
+{
+    border-top:1px solid #CACACA;
+    border-bottom:1px solid #CACACA;
+    height:15px;
+    background-color:yellow;
+    cursor: move;
+}
+
+.GProgress
+{
+    background-color:black;
+    height:2px;
+    overflow: hidden;
+    margin-top:5px;
+}
+.GDrag{
+    display: block;
+    position: relative;
+    opacity: 0;
+    float: left;
+    width: 5px;
+    height: 15px;
+    background-color: green;
+    cursor: e-resize;
+}
+.GDrag:hover{opacity: 1}
+.GDelete{
+    display: block;
+    position: relative;
+    float: left;
+    opacity: 0;
+    width: 10px;
+    height: 15px;
+    text-align: center;
+    line-height: 14px;
+}
+.GDelete:hover{opacity: 1;}

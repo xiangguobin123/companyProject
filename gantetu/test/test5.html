@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script language=javascript>
+        var date1 = new Date('2013-4-2 18:00')
+        var date2 = new Date('2013-4-3 10:22:21')
+
+        var s1 = date1.getTime(),s2 = date2.getTime();
+        var total = (s2 - s1)/1000;
+
+
+        var day = parseInt(total / (24*60*60));//计算整数天数
+        var afterDay = total - day*24*60*60;//取得算出天数后剩余的秒数
+        var hour = parseInt(afterDay/(60*60));//计算整数小时数
+        var afterHour = total/60 - day*24*60 - hour*60;//取得算出小时数后剩余的分数
+        var min = parseInt(afterHour/60);//计算整数分
+        var afterMin = total - day*24*60*60 - hour*60*60 - min*60;//取得算出分后剩余的秒数
+
+        console.log(day);
+        console.log(afterDay);
+        console.log(hour);
+        console.log(afterHour);
+        console.log(afterMin);
+    </script>
+</head>
+<body>
+<table id="myTable" border="1">
+    <tr>
+        <td>Row1 cell1</td>
+        <td>Row1 cell2</td>
+    </tr>
+    <tr>
+        <td>Row2 cell1</td>
+        <td>Row2 cell2</td>
+    </tr>
+    <tr>
+        <td>Row3 cell1</td>
+        <td>Row3 cell2</td>
+    </tr>
+</table>
+<br>
+<input type="button" onclick="insRow()" value="Insert row">
+</body>
+</html>

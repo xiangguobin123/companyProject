@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>甘特图1.0.0</title>
+    <script type="text/javascript" src="../js/main.js"></script>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div id="main" class="main">
+    <div class="top">
+        事项：<input id="item" type="text" placeholder="请输入事项名...">
+        工作量（天）：<input id="workLoad" type="text" placeholder="请输入工作量..." onkeyup="value=value.replace(/[^\d.]/g,'')">
+        <input type="button" id="startGantt" value="创建" onclick="startGantt();">
+    </div>
+    <div class="center">
+        <div class="gantt_area" id="ganttArea"></div>
+    </div>
+    <div class="bottom" id="itemShow"></div>
+</div>
+</body>
+</html>
