@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>拼图小游戏</title>
+    <script type="text/javascript" src="../js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+</head>
+<body>
+<div class="main">
+    <div class="top">
+        <form class="my_form">
+            行：<input id="row" type="text" placeholder="请输入1-4的任意数字">
+            列：<input id="col" type="text" placeholder="请输入1-4的任意数字">
+            <input type="button" class="button" id="startButton" value="开始" onclick="startGame();">
+        </form>
+    </div>
+    <div class="bottom">
+        <div class="game_area" id="gameShow"></div>
+        <div class="show_time">
+            <div class="count_time" id="countTime">0:0:0</div>
+            <div class="pause_button">
+                <input type="button" class="button" id="pauseButton" value="暂停" onclick="pauseGame();">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pause_alert" id="pauseAlert">
+    <br>
+    游戏管家提示您：
+    <hr/>
+    <br><br><br><br>
+    &nbsp;游戏暂停！！！
+    <br><br><br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" class="button" id="continueGame" value="继续游戏" onclick="continueGame();">
+</div>
+<div class="complete_alert" id="completeAlert">
+    <br>
+    游戏管家提示您：
+    <hr/>
+    <br><br><br><br>
+    &nbsp;游戏完成！！！
+    <br><br><br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" class="button" id="closeAlert" value="关闭" onclick="closeOverAlert();">
+</div>
+</body>
+<script type="text/javascript">
+
+</script>
+</html>

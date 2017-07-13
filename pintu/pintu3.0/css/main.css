@@ -1,0 +1,99 @@
+body{margin: 0 auto}
+div{margin: 0;padding: 0}
+input{
+    font-size: 20px;
+}
+.button{
+    width: 100px;
+    height: auto;
+}
+.main{
+    z-index: -1;
+    position: absolute;
+    display: block;
+    margin:0 400px;
+    width: 800px;
+    height: 600px;
+    padding: 0;
+    background-color: antiquewhite;
+    font-size: 20px;
+}
+.top{
+    margin: 0 auto;
+    width: auto;
+    height: 60px;
+    padding-top: 30px;
+    background-color: aliceblue;
+    text-align: center;
+}
+.bottom{
+    float: left;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0;
+    width: 800px;
+    height: 500px;
+}
+.game_area{
+    float: left;
+    text-align: center;
+    margin: 0 auto;
+    overflow: auto;
+    padding: 0;
+    width: 500px;
+    height: 500px;
+    cursor:pointer;
+}
+.show_time{
+    float: left;
+    width: 300px;
+    height: 500px;
+    background-color: beige;
+}
+.count_time{
+    margin: 100px 50px 0;
+    width: 200px;
+    height: 60px;
+    font-size: 50px;
+}
+.pause_button{
+    margin: 200px 50px 0;
+    padding-left: 50px;
+    width: auto;
+    height: auto;
+}
+.pause_alert{
+    z-index: 1;
+    position: absolute;
+    margin: 0 35%;
+    background-color: white;
+    display: none;
+    width: 500px;
+    height: 300px;
+    font-size: 20px;
+    box-shadow:0 0 10px #000;        //设置阴影
+}
+.complete_alert{
+    z-index: 0;
+    position: absolute;
+    margin: 0 35%;
+    background-color: white;
+    display: none;
+    width: 500px;
+    height: 300px;
+    font-size: 20px;
+    box-shadow:0 0 10px #000;        //设置阴影
+}
+.block{
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    float: left;
+    width: 50px;
+    height: 50px;
+    background-color: green;
+}
+canvas{
+    float: left;
+    background-color: #408080;
+}

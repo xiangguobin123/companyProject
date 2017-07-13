@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        div{
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            position: absolute;
+            margin-left: 10px;
+            float: left;
+        }
+    </style>
+</head>
+<body id="body1">
+<button onclick="btn()">创建div</button>
+<script>
+    function  btn(){
+        var id;
+        //动态创建元素
+        var str=document.createElement("div");
+        //元素的背景色随机的
+        str.style.backgroundColor=getColorRandom();
+        //将生成的div追加到body中
+        document.getElementById("body1").appendChild(str);
+        //随机生成的id设置为动态创建的div的id
+        str.id="items"+parseInt(Math.random()*10000);
+        // 获取动态生成的div的id
+        var obj=document.getElementById(str.id);
+
+        var disX=0;
+        var disY=0;
+        //鼠标点击落下事件
+        obj.onmousedown=function (event){
+            disX=event.clientX-obj.offsetLeft;
+            disY=event.clientY-obj.offsetTop;
+            //鼠标移开事件
+            document.onmousemove=function(ev){
+                obj.style.left=ev.clientX-disX+"px";
+                obj.style.top=ev.clientY-disY+"px";
+            }
+            //鼠标松开事件
+            document.onmouseup= function () {
+                document.onmousemove=null;
+                document.onmouseup=null;
+            }
+        };
+        //生成随机颜色
+        function getColorRandom(){
+            var c="#";
+            var cArray=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
+            for(var i=0;i<6;i++){
+                var  cIndex= Math.round(Math.random()*15);
+                c+=cArray[cIndex];
+            }
+            return c;
+        }
+
+    }
+</script>
+</body>
+
+</html>
