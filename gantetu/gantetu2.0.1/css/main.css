@@ -56,8 +56,9 @@ table{
     border-top:1px solid #CACACA;
     border-bottom:1px solid #CACACA;
     height:15px;
-    background-color:yellow;
+    background-color:green;
     cursor: move;
+    border-radius: 8px;
 }
 
 .GProgress
@@ -72,8 +73,9 @@ table{
     position: relative;
     opacity: 0;
     float: left;
-    width: 5px;
+    width: 10px;
     height: 15px;
+    border-radius: 2px;
     background-color: green;
     cursor: e-resize;
 }
@@ -89,3 +91,10 @@ table{
     line-height: 14px;
 }
 .GDelete:hover{opacity: 1;}
+
+.GBefore{
+    background-color: chocolate;
+}
+.GAfter{
+    background-color: orange;
+}
