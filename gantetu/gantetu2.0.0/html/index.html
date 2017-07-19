@@ -12,51 +12,29 @@
     <div class="top">
         <form>
             事项：<input id="item" type="text" placeholder="请输入事项名...">
-            工作量（天）：<input id="workLoad" type="text" placeholder="请输入工作量..." onkeyup="value=value.replace(/[^\d.]/g,'')">
+            开始时间：<input class="input_text" type="datetime-local" id="from" placeholder="如2017-7-11 0:0:0">
+            结束时间：<input class="input_text" type="datetime-local" id="to" placeholder="如2017-7-11 0:0:0">
+            <!--工作量（天）：<input id="workLoad" type="text" placeholder="请输入工作量..." onkeyup="value=value.replace(/[^\d.]/g,'')">-->
             <input type="button" id="startGantt" value="创建" onclick="setUpGantt()">
             <input name="zu" id="zu" type="checkbox" value="">组
         </form>
     </div>
     <div class="center">
         <div class="today_time" id="todayTime"></div>
-        <div class="time_axis">
-            <div class="time_name">时间</div>
-            <div class="time_point">
-                <div class="time_year">年</div>
-                <div class="time_month">月</div>
-                <div class="time_day">日</div>
+        <div class="item_name" id="itemName">
+            <div class="task_names">Task</div>
+        </div>
+        <div style="overflow: scroll;height: 500px" id="ganttChart">
+            <div id="timePoint"></div>
+            <div class="gantt_area" id="ganttArea">
+                <div id="colArea"></div>
             </div>
         </div>
-        <div class="gantt_">
-            <div class="item_name" id="itemName">
-
-            </div>
-            <div class="gantt_area" id="ganttArea"></div>
-        </div>
+    <div class="bottom" id="bottomShow">
+        <div class="bottom_item" id="bottomItem"></div>
+        <div class="bottom_work" id="bottomWork"></div>
     </div>
-    <div class="bottom" id="bottomShow"></div>
-    <div class="item_table" id="itemTable">
-        <table width="1000px" border="1">
-            <tr>
-                <th height="50px">事项名</th>
-                <th>开始时间</th>
-                <th>结束时间</th>
-                <th>工作量</th>
-            </tr>
-            <tr>
-                <td>事项一</td>
-                <td>2017-7-6</td>
-                <td>2017-7-10</td>
-                <td>4.0</td>
-            </tr>
-            <tr>
-                <td>事项一</td>
-                <td>2017-7-6</td>
-                <td>2017-7-10</td>
-                <td>4.0</td>
-            </tr>
-        </table>
-    </div>
+    <div class="item_table" id="itemTable"></div>
 </div>
 </body>
 <script type="text/javascript">

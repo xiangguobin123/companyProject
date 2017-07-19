@@ -14,6 +14,20 @@ setInterval(function() {
     $('#todayTime').html(nowTime);
 }, 1000);
 
+//获取星期数
+function weekChange(date) {
+    var week;
+    switch (date){
+        case 0:week = "Sun";break;
+        case 1:week = "Mon"; break;
+        case 2:week = "Tus"; break;
+        case 3:week = "Wed"; break;
+        case 4:week = "Thu"; break;
+        case 5:week = "Fri"; break;
+        case 6:week = "Sat";
+    }
+    return week;
+}
 
 //获取每月的天数
 function getDaysInMonth(month, year) {
@@ -70,13 +84,14 @@ function Task(from, to, task) {
     var _to = new Date();
     var _task = task;
     var _workload = 0;
+    var _alltime = 0;
 
     var dvArrFrom = from.split('T');
     var dvArrTo = to.split('T');
-
     var dvArrFromYMD = dvArrFrom[0].split('-');
     var dvArrToYMD = dvArrTo[0].split('-');
 
+    //获取正确的时间
     if(dvArrFrom[1] == undefined){
         _from = new Date(parseInt(dvArrFromYMD[0], 10), parseInt(dvArrFromYMD[1], 10) - 1,
             parseInt(dvArrFromYMD[2], 10),0,0,0);
@@ -91,7 +106,6 @@ function Task(from, to, task) {
             parseInt(dvArrFromYMD[2], 10),parseInt(dvArrFromHMS[0],10),
             parseInt(dvArrFromHMS[1],10),parseInt(dvArrFromHMS[2],10));
     }
-
     if(dvArrTo[1] == undefined){
         _to = new Date(parseInt(dvArrToYMD[0], 10), parseInt(dvArrToYMD[1], 10) - 1,
             parseInt(dvArrToYMD[2], 10),0,0,0);
@@ -107,34 +121,93 @@ function Task(from, to, task) {
             parseInt(dvArrToHMS[1],10),parseInt(dvArrToHMS[2],10));
     }
 
-    /*var total = (_to.getTime()-_from.getTime())/1000;
-    var day = parseInt(total / (24*60*60));         //计算整数天数
-    var afterDay = total - day*24*60*60;            //取得算出天数后剩余的秒数
-    var hour = parseInt(afterDay/(60*60));          //计算整数小时数
-    var afterHour = total/60 - day*24*60 - hour*60; //取得算出小时数后剩余的分数
+    _workload = wordloadCount(_from,_to);   //计算整个时间区域内所有的工作量
+    _alltime = wordloadCount(_from,_to);
 
-    _workload  = day*24+hour;
-    if((parseInt(dvArrFromHMS[1],10)==30)&&(parseInt(dvArrToHMS[1],10)!=30)){
-        _workload = _workload+0.5;
+/*    //计算去除非工作时间的工作量
+    var _fmonend = new Date(_from.getFullYear(),_from.getMonth(),_from.getDate(),11,30,0);
+    var _fafterend = new Date(_from.getFullYear(),_from.getMonth(),_from.getDate(),18,0,0);
+    var _tmonstart = new Date(_to.getFullYear(),_to.getMonth(),_to.getDate(),8,30,0);
+    var _tafterstart = new Date(_to.getFullYear(),_to.getMonth(),_to.getDate(),13,30,0);
+    var _ftmp = new Date();
+    var _ttmp = new Date();
+    if(_from.getDate() == getDaysInMonth(_from.getMonth()+1,_from.getFullYear())){
+        if(_from.getMonth() == 11){
+            _ftmp.setFullYear(_from.getFullYear()+1,1,1);
+        }else{
+            _ftmp.setFullYear(_from.getFullYear(),_from.getMonth()+1,1);
+        }
+    }else{
+        _ftmp.setFullYear(_from.getFullYear(),_from.getMonth(),_from.getDate()+1);
     }
-    if((parseInt(dvArrFromHMS[1],10)!=30)&&(parseInt(dvArrToHMS[1],10)==30)){
-        _workload = _workload+0.5;
-    }*/
+    if(_to.getDate() == 1){
+        if(_to.getMonth() == 0){    //1月份
+            _ttmp.setFullYear(_to.getFullYear()-1,11,31);
+        }else{
+            _ttmp.setFullYear(_to.getFullYear(),_to.getMonth()-1,getDaysInMonth(_to.getMonth(),_to.getFullYear()));
+        }
+    }else{
+        _ttmp.setFullYear(_to.getFullYear(),_to.getMonth(),_to.getDate()-1);
+    }
 
-    _workload = wordloadCount(_from,_to);
+    if((_from.getHours()>=8)&&(_from.getHours()<=11)){       //计算第一天的工作量
+        _workload = wordloadCount(_from,_fmonend)+4.5;
+    }else if((_from.getHours()>=13)&&(_from.getHours()<=18)){
+        _workload = wordloadCount(_from,_fafterend);
+    }
+    while(Date.parse(_ftmp)<=Date.parse(_ttmp)){
+        if(_ftmp.getDay()%6!=0){        //如果不是周末，就加上每天的工作量
+            _workload = _workload + 7.5;
+        }
+        if(_ftmp.getDate() < getDaysInMonth(_ftmp.getMonth() + 1,_ftmp.getFullYear()))
+        {
+            _ftmp.setDate(_ftmp.getDate() + 1);
+        }
+        else
+        {
+            if(_ftmp.getMonth() == 11) //December
+            {
+                _ftmp.setFullYear(_ftmp.getFullYear() + 1, 0, 1);
+            }
+            else
+            {
+                _ftmp.setFullYear(_ftmp.getFullYear(),
+                    _ftmp.getMonth() + 1, 1);
+            }
+        }
+    }
+    if((_to.getHours()>=8)&&(_to.getHours()<=11)){       //计算最后一天的工作量
+        _workload = _workload + wordloadCount(_tmonstart,_to);
+    }else if((_to.getHours()>=13)&&(_to.getHours()<=18)){
+        _workload = _workload + wordloadCount(_tafterstart,_to)+3;
+    }*/
 
     this.getFrom = function(){ return _from};
     this.getTo = function(){ return _to};
     this.getTask = function(){ return _task};
     this.getWorkload = function(){ return _workload};
+    this.getAlltime = function(){ return _alltime};
 
     this.setFrom = function(from){_from = from};
     this.setTo = function(to){_to = to};
     this.setWordload = function (workload) {_workload = workload;}
 }
 
+//创建组对象
+function zuTask(zuname,value,zunum) {
+    var _zuname = zuname;
+    var _value = value;
+    var _zunum = zunum;
+
+    this.getZuName = function () {return _zuname;};
+    this.getValue = function () {return _value;};
+    this.getZuNum = function () {return _zunum;};
+
+    this.addTask = function () {};
+}
+
 var _taskList = new Array();            //用来存产生的事项对象
-var _num = 0;                           //用于记数产生提示竖线
+var _num = 0;                           //与表格显示有关
 
 //主要对象，用于控制在页面中生成图
 function Gantt(gDiv,tDiv) {
@@ -143,14 +216,10 @@ function Gantt(gDiv,tDiv) {
 
     //添加事项到数组中
     this.AddTaskDetail = function(value) {
-        if(value.getWorkload() <= 0){
-            alert("请确认开始时间在结束时间之前！！！");
-        }else{
-            _taskList.push(value);
-        }
+        _taskList.push(value);
     };
     //以小时显示
-    this.DrawHour = function() {
+    this.DrawHour = function(flag) {
         var _offSet = 0;
         var _dateDiff = 0;
         var _currentDate = new Date();
@@ -230,7 +299,7 @@ function Gantt(gDiv,tDiv) {
                     if(Date.parse(_dTemp) == Date.parse(_currentDate))
                     {
                         _secondRow += "<td colspan='24' class='GWeekend' style='background-color: red'><div style='width: 600px;'>" +
-                            _dTemp.getDate() + "</div></td>";
+                            _dTemp.getDate() + "/"+weekChange(_dTemp.getDay())+"</div></td>";
                         for(var i=0;i<24;i++){
                             _gStr+="<div class='ColLine' style='position:absolute;top: 38px;left:"+(203+28*tNum)+"px;background-color:#D3D3D3;width: 1px;height: 1000px;'></div>";  //画几条竖线用来提示
                             _forthRow += "<td id='GC_Today"+i+"' class='GToDay' style='background-color:red;height:" + (_taskList.length * 21) +
@@ -243,24 +312,23 @@ function Gantt(gDiv,tDiv) {
                     else
                     {
                         _secondRow += "<td colspan='24' class='GWeekend'><div style='width: 600px;'>" +
-                            _dTemp.getDate() + "</div></td>";
+                            _dTemp.getDate() + "/"+weekChange(_dTemp.getDay())+"</div></td>";
                         for(var i=0;i<24;i++){
                             _gStr+="<div class='ColLine' style='position:absolute;top: 38px;left:"+(203+28*tNum)+"px;background-color:#D3D3D3;width: 1px;height: 1000px;'></div>";  //画几条竖线用来提示
                             _thirdRow += "<td class='GWeekend' style='width: 28px'><div style='width: 25px;text-align: center'>"+i+"</div></td>";
                             _forthRow += "<td id='GC_" + (counter++) +
                                 "' class='GWeekend' style='height:" + (_taskList.length * 21) +
                                 "'></td>";
-                            /*_fiveRow += "<td style='height: 10000px'></td>";*/
+                             /*_fiveRow += "<td style='height: 10000px'></td>";*/
                             tNum++;
                         }
                     }
-
                 }
                 else
                 {
                     if(Date.parse(_dTemp) == Date.parse(_currentDate)){
                         _secondRow += "<td colspan='24' class='GDay' style='background-color: red'><div style='width: 600px;'>" +
-                            _dTemp.getDate() + "</div></td>";
+                            _dTemp.getDate() + "/"+weekChange(_dTemp.getDay())+"</div></td>";
                         for(var i=0;i<24;i++){
                             _gStr+="<div class='ColLine' style='position:absolute;top: 38px;left:"+(203+28*tNum)+"px;background-color:#D3D3D3;width: 1px;height: 1000px;'></div>";  //画几条竖线用来提示
                             _forthRow += "<td id='GC_Today"+i+"' class='GToDay' style='background-color:red;height:" + (_taskList.length * 21) +
@@ -273,7 +341,7 @@ function Gantt(gDiv,tDiv) {
                     else
                     {
                         _secondRow += "<td colspan='24' class='GDay'><div style='width: 600px;'>" +
-                            _dTemp.getDate() + "</div></td>";
+                            _dTemp.getDate() + "/"+weekChange(_dTemp.getDay())+"</div></td>";
                         for(var i=0;i<24;i++){
                             _gStr+="<div class='ColLine' style='position:absolute;top: 38px;left:"+(203+28*tNum)+"px;background-color:#D3D3D3;width: 1px;height: 1000px;'></div>";  //画几条竖线用来提示
                             _thirdRow += "<td style='width: 28px'><div style='width: 25px;text-align: center'>"+i+"</div></td>";
@@ -321,25 +389,25 @@ function Gantt(gDiv,tDiv) {
             _gStr += _secondRow + _thirdRow + _forthRow;
             _gStr += "</table>";
             _gStr = _firstRowStr + _gStr;
-            _gStr += "<div id='ganttArea' style='position: absolute;top: 55px;left: 204px;width: auto;height: 800px;'>";
             _minDate.setHours(0);
             _minDate.setMinutes(0);
             _minDate.setSeconds(0);
-            for(i = 0; i < _taskList.length; i++)
-            {
-                if(_taskList[i]!=undefined) {
+            _gStr += "<div id='ganttArea' style='position: absolute;left: 204px;width: auto;height: 800px;'>";
+            for (i = 0; i < _taskList.length; i++) {
+                if (_taskList[i] != undefined) {
                     _offSet = (Date.parse(_taskList[i].getFrom()) - Date.parse(_minDate)) /
                         (60 * 60 * 1000);
                     _dateDiff = (Date.parse(_taskList[i].getTo()) -
                         Date.parse(_taskList[i].getFrom())) / (24 * 60 * 60 * 1000);
                     _gStr += "<div id='bartype&" + i + "' style='position:relative;left:" + (_offSet * 28) + "px;width:" +
-                        (28 * _taskList[i].getWorkload() - 1 + 100) + "px;height: 18px'><div title='"+
-                        _taskList[i].getTask()+" "+_taskList[i].getWorkload()+"' id='"+i+"&"+_taskList[i].getTask()+"' class='GTask' style='float:left;width:" +
+                        (28 * _taskList[i].getWorkload() - 1 + 100) + "px;height: 18px'><div title='" +
+                        _taskList[i].getTask() + " " + _taskList[i].getWorkload() + "' id='" + i + "&" + _taskList[i].getTask() + "' class='GTask' style='float:left;width:" +
                         (28 * _taskList[i].getWorkload() - 1) + "px;'>" +
-                        "</div><div id='drag&"+i+"&"+_taskList[i].getTask() +"' class='GDrag'></div><button id='delete&" + i + "&" + _taskList[i].getTask() + "' class='GDelete'>×</button></div>";
+                        "</div><div id='drag&" + i + "&" + _taskList[i].getTask() + "' class='GDrag'></div><button id='delete&" + i + "&" + _taskList[i].getTask() + "' class='GDelete'>×</button></div>";
                 }
             }
-            _gStr+="</div><div id='taskNameArea' style='position: absolute;top:55px;left: 0;width: 200px;height: auto'>";
+            _gStr+="</div>";
+            _gStr+="<div id='taskNameArea' style='position: absolute;top:55px;left: 0;width: 200px;height: auto'>";
             for(var i=0;i<_taskList.length;i++){
                 if (_taskList[i]!=undefined){
                     _gStr += "<div id='taskName&"+i+"' title='"+_taskList[i].getTask()+"' " +
@@ -350,14 +418,12 @@ function Gantt(gDiv,tDiv) {
             }
             _gStr+="</div>";
             //颜色提示
-            _gStr+="<div style='position: absolute;top: -100px;left: 600px;width: 25px;height: 25px;background-color: chocolate;border-radius: 10px'></div>" +
-                "<div style='position:absolute;top: -95px;left: 635px;'>已完成</div>" +
-                "<div style='position: absolute;top:-70px;left: 600px;width: 25px;height: 25px;background-color: green;border-radius: 10px;'></div>" +
-                "<div style='position: absolute;top: -65px;left: 635px;'>进行中</div>" +
-                "<div style='position: absolute;top:-40px;left: 600px;width: 25px;height: 25px;background-color: orange;border-radius:10px;'></div>" +
-                "<div style='position: absolute;top: -35px;left: 635px;'>未开始</div>";
-
-            /*showTask(_tStr);*/
+            _gStr+="<div style='position: absolute;top: -100px;left: 1000px;width: 25px;height: 25px;background-color: chocolate;border-radius: 10px'></div>" +
+                "<div style='position:absolute;top: -95px;left: 1035px;'>已完成</div>" +
+                "<div style='position: absolute;top:-70px;left: 1000px;width: 25px;height: 25px;background-color: green;border-radius: 10px;'></div>" +
+                "<div style='position: absolute;top: -65px;left: 1035px;'>进行中</div>" +
+                "<div style='position: absolute;top:-40px;left: 1000px;width: 25px;height: 25px;background-color: orange;border-radius:10px;'></div>" +
+                "<div style='position: absolute;top: -35px;left: 1035px;'>未开始</div>";
 
             _GanttDiv.innerHTML = _gStr;
 
@@ -379,6 +445,7 @@ function Gantt(gDiv,tDiv) {
                 rowLine[i].style.width = 28*tNum+200 + "px";
             }
             document.getElementById('ganttArea').style.width = 28*tNum + "px";
+            document.getElementById('ganttArea').style.height = 18*_taskList.length + "px";
             for (var i=0;i<colLine.length;i++){
                 colLine[i].style.height = 18 * (_taskList.length+1) + "px";
             }
@@ -458,12 +525,13 @@ function Gantt(gDiv,tDiv) {
                 _gStr+="<div class='ColLine' style='position:absolute;top: 38px;left:"+(203+28*tNum)+"px;background-color:#D3D3D3;width: 1px;height: 1000px;'></div>";  //画几条竖线用来提示
                 if(_dTemp.getDay() % 6 == 0) //Weekend
                 {
+
                     if(Date.parse(_dTemp) == Date.parse(_currentDate))
                     {
                         _gStr += "<td class='GWeekend' style='background-color:red'><div style='width:25px;'>" +
                             _dTemp.getDate() + "</div></td>";
-                        _thirdRow += "<td id='GC_Today' class='GToDay' style='background-color:red;height:" +
-                            (_taskList.length * 21) + "'> </td>";
+                        _thirdRow += "<td id='GC_Today' class='GToDay' style='text-align:center;background-color:red;height:" +
+                            (_taskList.length * 21) + "'>"+weekChange(_dTemp.getDay())+"</td>";
                     }
                     else
                     {
@@ -471,24 +539,23 @@ function Gantt(gDiv,tDiv) {
                             _dTemp.getDate() + "</div></td>";
                         _thirdRow += "<td id='GC_" + (counter++) +
                             "' class='GWeekend' style='height:" + (_taskList.length * 21) +
-                            "'></td>";
+                            "'>"+weekChange(_dTemp.getDay())+"</td>";
                     }
-
                 }
                 else
                 {
                     if(Date.parse(_dTemp) == Date.parse(_currentDate)){
                         _gStr += "<td class='GDay' style='background-color: red'><div style='width:25px;'>" +
                             _dTemp.getDate() + "</div></td>";
-                        _thirdRow += "<td id='GC_Today' class='GToDay' style='background-color:red;height:" + (_taskList.length * 21) +
-                            "'></td>";
+                        _thirdRow += "<td id='GC_Today' class='GToDay' style='text-align:center;background-color:red;height:" + (_taskList.length * 21) +
+                            "'>"+weekChange(_dTemp.getDay())+"</td>";
                     }
                     else
                     {
                         _gStr += "<td class='GDay'><div style='width:25px;'>" +
                             _dTemp.getDate() + "</div></td>";
                         _thirdRow += "<td id='GC_" + (counter++) +
-                            "' class='GDay'></td>";
+                            "' class='GDay'>"+weekChange(_dTemp.getDay())+"</td>";
                     }
 
                 }
@@ -554,12 +621,12 @@ function Gantt(gDiv,tDiv) {
                 }
             }
             _gStr+="</div>";
-            _gStr+="<div style='position: absolute;top: -100px;left: 600px;width: 25px;height: 25px;background-color: chocolate;border-radius: 10px'></div>" +
-                "<div style='position:absolute;top: -95px;left: 635px;'>已完成</div>" +
-                "<div style='position: absolute;top:-70px;left: 600px;width: 25px;height: 25px;background-color: green;border-radius: 10px;'></div>" +
-                "<div style='position: absolute;top: -65px;left: 635px;'>进行中</div>" +
-                "<div style='position: absolute;top:-40px;left: 600px;width: 25px;height: 25px;background-color: orange;border-radius:10px;'></div>" +
-                "<div style='position: absolute;top: -35px;left: 635px;'>未开始</div>";
+            _gStr+="<div style='position: absolute;top: -100px;left: 1000px;width: 25px;height: 25px;background-color: chocolate;border-radius: 10px'></div>" +
+                "<div style='position:absolute;top: -95px;left: 1035px;'>已完成</div>" +
+                "<div style='position: absolute;top:-70px;left: 1000px;width: 25px;height: 25px;background-color: green;border-radius: 10px;'></div>" +
+                "<div style='position: absolute;top: -65px;left: 1035px;'>进行中</div>" +
+                "<div style='position: absolute;top:-40px;left: 1000px;width: 25px;height: 25px;background-color: orange;border-radius:10px;'></div>" +
+                "<div style='position: absolute;top: -35px;left: 1035px;'>未开始</div>";
 
             /*showTask(_tStr);*/
 
@@ -582,8 +649,9 @@ function Gantt(gDiv,tDiv) {
                 rowLine[i].style.width = 28*tNum+200 + "px";
             }
             document.getElementById('ganttArea').style.width = 28*tNum + "px";
+            document.getElementById('ganttArea').style.height = 18*_taskList.length + "px";
             for (var i=0;i<colLine.length;i++){
-                colLine[i].style.height = 18 * (_taskList.length) + "px";
+                colLine[i].style.height = 18 * (_taskList.length+1) + "px";
             }
         }
     };
@@ -764,6 +832,8 @@ function dragBlockHour(obj,dragObj,barObj) {
     var nowDate = new Date();
 
     obj.onmousedown = function (event) {
+        event.preventDefault();     //阻止事件冒泡
+        obj.style.zIndex = "10";
         objText = (obj.id).split("&");
         formerOffLeft = barObj.offsetLeft;
         disX = event.clientX - barObj.offsetLeft;
@@ -772,18 +842,21 @@ function dragBlockHour(obj,dragObj,barObj) {
         //鼠标移开事件
         document.onmousemove = function (ev) {
             /*obj.style.left = ev.clientX - disX + "px";
-            deteleObj.style.left = ev.clientX - disX + "px";
-            dragObj.style.left = ev.clientX-disX+"px";*/
+             deteleObj.style.left = ev.clientX - disX + "px";
+             dragObj.style.left = ev.clientX-disX+"px";*/
             barObj.style.left = ev.clientX-disX+"px";
             nowLeft = parseInt(barObj.style.left);
+            console.log(parseInt(barObj.style.left));
+            console.log(parseInt(barObj.style.left)<0);
 
-            if(parseInt(barObj.style.left)<0){
+            if(parseInt(barObj.style.left)<0) {
                 document.onmousemove = null;
                 document.onmouseup = null;
             }
         };
         //鼠标松开事件
         document.onmouseup = function (event) {
+            console.log(barObj.style.left);
             document.onmousemove = null;
             document.onmouseup = null;
 
@@ -799,7 +872,7 @@ function dragBlockHour(obj,dragObj,barObj) {
 
                     //改变开始时间和结束时间
                     var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
-                    var nowTaskTo = new Date(((nowTaskFrom)/1000+(3600*(_taskList[nowTaskNum].getWorkload())))*1000);
+                    var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
                     _taskList[nowTaskNum].setFrom(nowTaskFrom);
                     _taskList[nowTaskNum].setTo(nowTaskTo);
                 }else{
@@ -808,7 +881,7 @@ function dragBlockHour(obj,dragObj,barObj) {
 
                     //改变开始时间和结束时间
                     var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
-                    var nowTaskTo = new Date(((nowTaskFrom)/1000+(3600*(_taskList[nowTaskNum].getWorkload())))*1000);
+                    var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
                     _taskList[nowTaskNum].setFrom(nowTaskFrom);
                     _taskList[nowTaskNum].setTo(nowTaskTo);
                 }
@@ -819,6 +892,8 @@ function dragBlockHour(obj,dragObj,barObj) {
         };
     };
     dragObj.onmousedown = function (event) {
+        event.preventDefault();     //阻止事件冒泡
+        obj.style.zIndex = "10";
         priWidth = obj.style.width;
         barWidth = barObj.style.width;
         dragObjText = (dragObj.id).split("&");
@@ -876,6 +951,7 @@ function dragBlockDay(obj,dragObj,barObj) {
     var dragDayNum2 = 0;
 
     obj.onmousedown = function (event) {
+        event.preventDefault();     //阻止事件冒泡
         objText = (obj.id).split("&");
         formerOffLeft = barObj.offsetLeft;
         disX = event.clientX - barObj.offsetLeft;
@@ -931,6 +1007,7 @@ function dragBlockDay(obj,dragObj,barObj) {
         };
     };
     dragObj.onmousedown = function (event) {
+        event.preventDefault();     //阻止事件冒泡
         priWidth = obj.style.width;
         barWidth = barObj.style.width;
         dragObjText = (dragObj.id).split("&");
@@ -997,45 +1074,54 @@ function addTask() {
     var taskName = document.getElementById('taskName').value;
     var from = document.getElementById('from').value;
     var to = document.getElementById('to').value;
+    var zuCheck = document.getElementById('zu').checked;
     if(taskName == ""||from == ""||to == ""){
         alert("事项名或开始时间或结束时间为空，请检查！！！");
         var g = new Gantt(document.all.GanttChart,document.all.taskShow);
         g.AddTaskDetail(new Task('2017-7-4T8:30:00', '2017-7-5T10:00:00', 'task1'));
         g.AddTaskDetail(new Task('2017-7-5T9:30:00', '2017-7-9T11:30:00','task2'));
-        g.AddTaskDetail(new Task('2017-7-6T9:30:00', '2017-7-8T16:00:00','task3'));
-        g.AddTaskDetail(new Task('2017-7-05T11:00:00', '2017-7-12T13:00:00','task4'));
+        g.AddTaskDetail(new Task('2017-7-15T9:30:00', '2017-7-17T16:00:00','task3'));
+        g.AddTaskDetail(new Task('2017-7-17T11:00:00', '2017-7-20T13:00:00','task4'));
         g.AddTaskDetail(new Task('2017-7-14T10:00:00', '2017-7-15T11:30:00','sdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf'));
         g.AddTaskDetail(new Task('2017-7-8T15:30:00', '2017-7-14T09:30:00','task6'));
 
-        g.DrawHour();
+        g.DrawHour(zuCheck);
         g.DragHour();
         ColorChange();
         Show();
     }else {
-        var divFrom = from.split("-");
-        var divTo = to.split("-");
+        var dvArrFrom = from.split('T');
+        var dvArrTo = to.split('T');
 
-        var fromMonthDay = getDaysInMonth(parseInt(divFrom[1],10),parseInt(divFrom[0],10));
-        var toMonthDay = getDaysInMonth(parseInt(divTo[1],10),parseInt(divTo[0],10));
+        var dvArrFromYMD = dvArrFrom[0].split('-');
+        var dvArrToYMD = dvArrTo[0].split('-');
 
-        var fromTime = Date.parse(new Date(divFrom[0], divFrom[1]-1, divFrom[2]));
-        var toTime = Date.parse(new Date(divTo[0], divTo[1]-1, divTo[2]));
-        if(parseInt(divFrom[2],10)>fromMonthDay||parseInt(divFrom[2],10)<=0){
+        var fromMonthDay = getDaysInMonth(parseInt(dvArrFromYMD[1],10),parseInt(dvArrFromYMD[0],10));
+        var toMonthDay = getDaysInMonth(parseInt(dvArrToYMD[1],10),parseInt(dvArrToYMD[0],10));
+
+        var fromTime = new Date();
+        fromTime.setFullYear(dvArrFromYMD[0], dvArrFromYMD[1]-1, dvArrFromYMD[2]);
+        var toTime = new Date();
+        toTime.setFullYear(dvArrToYMD[0], dvArrToYMD[1]-1, dvArrToYMD[2]);
+        if(parseInt(dvArrFrom[2],10)>fromMonthDay||parseInt(dvArrFrom[2],10)<=0){
             alert("请输入正确的开始日期！！！");
         }else{
-            if (parseInt(divTo[2],10)>toMonthDay||parseInt(divTo[2],10)<=0){
+            if (parseInt(dvArrToYMD[2],10)>toMonthDay||parseInt(dvArrToYMD[2],10)<=0){
                 alert("请输入正确的结束日期！！！");
             }else{
-                if (fromTime>toTime){
+                if (Date.parse(fromTime)>Date.parse(toTime)){
                     alert("请确认开始时间在结束时间之前！！！");
                 }else{
-                    var g = new Gantt(document.all.GanttChart,document.all.taskShow);
-                    g.AddTaskDetail(new Task(from,to,taskName));
-
-                    g.DrawHour();
-                    g.DragHour();
-                    ColorChange();
-                    Show();
+                    if((fromTime.getDay()%6==0)||(toTime.getDay()%6==0)){
+                        alert("今天是周末,请输入工作日期！！！");
+                    }else{
+                        var g = new Gantt(document.all.GanttChart,document.all.taskShow);
+                        g.AddTaskDetail(new Task(from,to,taskName));
+                        g.DrawHour(zuCheck);
+                        g.DragHour();
+                        ColorChange();
+                        Show();
+                    }
                 }
             }
         }

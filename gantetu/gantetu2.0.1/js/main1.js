@@ -14,6 +14,20 @@ setInterval(function() {
     $('#todayTime').html(nowTime);
 }, 1000);
 
+//星期转换
+function weekChange(date) {
+    var week;
+    switch (date){
+        case 0:week = "S";break;
+        case 1:week = "M"; break;
+        case 2:week = "T"; break;
+        case 3:week = "W"; break;
+        case 4:week = "T"; break;
+        case 5:week = "F"; break;
+        case 6:week = "S";
+    }
+    return week;
+}
 
 //获取每月的天数
 function getDaysInMonth(month, year) {
@@ -50,7 +64,8 @@ function Task(from, to, task) {
     var _from = new Date();
     var _to = new Date();
     var _task = task;
-    var _workload = DateDiff(from,to);
+    /*var _workload = DateDiff(from,to);*/
+    var _workload = 0;
     var dvArrFrom = from.split('-');
     var dvArrTo = to.split('-');
 
@@ -58,6 +73,37 @@ function Task(from, to, task) {
         parseInt(dvArrFrom[2], 10));
     _to.setFullYear(parseInt(dvArrTo[0], 10), parseInt(dvArrTo[1], 10) - 1,
         parseInt(dvArrTo[2], 10));
+
+    var _dTemp = new Date();
+    _dTemp.setFullYear(_from.getFullYear(), _from.getMonth(), _from.getDate());
+
+    while(Date.parse(_dTemp)<=Date.parse(_to)){
+        if(_dTemp.getDay() % 6 != 0) //Weekend,getDay()=0是周日，getDay()=6是周六
+        {
+            _workload++;
+        }
+        if(_dTemp.getDate() < getDaysInMonth(_dTemp.getMonth() + 1,
+                _dTemp.getFullYear()))
+        {
+            _dTemp.setDate(_dTemp.getDate() + 1);
+        }
+        else
+        {
+            if(_dTemp.getMonth() == 11) //December
+            {
+                _dTemp.setFullYear(_dTemp.getFullYear() + 1, 0, 1);
+            }
+            else
+            {
+                _dTemp.setFullYear(_dTemp.getFullYear(),
+                    _dTemp.getMonth() + 1, 1);
+            }
+        }
+    }
+    _workload = _workload - 1;
+    if(_to.getDay()%6 == 0){
+        _workload = _workload + 1;
+    }
 
     this.getFrom = function(){ return _from};
     this.getTo = function(){ return _to};
@@ -69,7 +115,21 @@ function Task(from, to, task) {
     this.setWordload = function (workload) {_workload = workload;}
 }
 
-/*var _taskList = new Array();            //用来存产生的事项对象*/
+function TaskGroup(groupName,num) {
+    var _groupName = groupName;
+    var _num = num;
+    var _value = new Tasks(from,to,task);
+
+    this.getGroupName = function () {return _groupName;};
+    this.getNum = function () {return _num;};
+    this.getValue = function () {return _value;};
+
+    this.setNum = function (num) {_num = num;};
+    this.setValue = function (value) {_value = value;};
+
+}
+
+var _taskList = new Array();            //用来存产生的事项对象
 var _num = 0;                           //用于记数产生提示竖线
 
 //主要对象，用于控制在页面中生成图
@@ -153,14 +213,14 @@ function Gantt(gDiv,tDiv) {
             while(Date.parse(_dTemp) <= Date.parse(_maxDate))
             {
                 _gStr+="<div style='position:absolute;top: 38px;left:"+(203+27*tNum)+"px;background-color:#D3D3D3;width: 1px;height: 1000px;'></div>";  //画几条竖线用来提示
-                if(_dTemp.getDay() % 6 == 0) //Weekend
+                if(_dTemp.getDay() % 6 == 0) //Weekend,getDay()=0是周日，getDay()=6是周六
                 {
                     if(Date.parse(_dTemp) == Date.parse(_currentDate))
                     {
                         _gStr += "<td class='GWeekend' style='background-color:red'><div style='width:24px;'>" +
                             _dTemp.getDate() + "</div></td>";
                         _thirdRow += "<td id='GC_Today' class='GToDay' style='background-color:red;height:" +
-                            (_taskList.length * 21) + "'> </td>";
+                            (_taskList.length * 21) + "'>"+weekChange(_dTemp.getDay())+"</td>";
                     }
                     else
                     {
@@ -168,9 +228,8 @@ function Gantt(gDiv,tDiv) {
                             _dTemp.getDate() + "</div></td>";
                         _thirdRow += "<td id='GC_" + (counter++) +
                             "' class='GWeekend' style='height:" + (_taskList.length * 21) +
-                            "'></td>";
+                            "'>"+weekChange(_dTemp.getDay())+"</td>";
                     }
-
                 }
                 else
                 {
@@ -178,14 +237,14 @@ function Gantt(gDiv,tDiv) {
                         _gStr += "<td class='GDay' style='background-color: red'><div style='width:24px;'>" +
                             _dTemp.getDate() + "</div></td>";
                         _thirdRow += "<td id='GC_Today' class='GToDay' style='background-color:red;height:" + (_taskList.length * 21) +
-                            "'></td>";
+                            "'>"+_dTemp.getDay()+"</td>";
                     }
                     else
                     {
                         _gStr += "<td class='GDay'><div style='width:24px;'>" +
                             _dTemp.getDate() + "</div></td>";
                         _thirdRow += "<td id='GC_" + (counter++) +
-                            "' class='GDay'></td>";
+                            "' class='GDay'>"+_dTemp.getDay()+"</td>";
                     }
 
                 }
@@ -280,25 +339,32 @@ function Gantt(gDiv,tDiv) {
             }
         }
     };
-    this.Show = function () {
-        var _tStr = "";
-        //将事项表格添加到页面当中
+}
+
+//以表格形式展示
+var Show = function () {
+    var _tStr = "";
+    if(_taskList == ""){
+        alert("当前并未创建事项！！！");
+    }else{
         _tStr+="<table id='tableShow' border='1' style='border-collapse:collapse;position:relative;text-align: center'><tr><th width='100px'>事项</th>" +
-            "<th width='100px'>开始时间</th><th width='100px'>结束时间</th><th width='100px'>工作量(天)</th></tr>";
+            "<th width='100px'>开始时间</th><th width='100px'>结束时间</th><th width='100px'>工作量(小时)</th></tr>";
         for(var i = 0;i<_taskList.length;i++){
             if(_taskList[i]!=undefined){
                 if (_taskList[i].getTask() != ""){
                     var fromTime = timeChange(_taskList[i].getFrom());
                     var toTime = timeChange(_taskList[i].getTo());
-                    _tStr+="<tr><td>"+_taskList[i].getTask()+"</td><td>"+fromTime+"</td><td>"+toTime+"</td><td>"+
+                    _tStr+="<tr><td><div title='"+_taskList[i].getTask()+"' " +
+                        "style='width: 95px;height:50px;line-height:50px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;cursor: default'>"
+                        +_taskList[i].getTask()+"</div></td><td>"+fromTime+"</td><td>"+toTime+"</td><td>"+
                         _taskList[i].getWorkload()+"</td></tr>"
                 }
             }
         }
         _tStr+="</table>";
-        _TaskShowDiv.innerHTML = _tStr;
+        document.getElementById('taskShow').innerHTML = _tStr;
     }
-}
+};
 
 //将时间转变成yyyy-mm-dd的形式
 function timeChange(date) {
@@ -390,7 +456,7 @@ function dragBlock(obj,dragObj,barObj) {
             barObj.style.left = ev.clientX-disX+"px";
             nowEv = parseInt(barObj.style.left);
 
-            if(parseInt(barObj.style.left)<=0){
+            if(parseInt(barObj.style.left)<0){
                 document.onmousemove = null;
             }
         };
@@ -410,7 +476,7 @@ function dragBlock(obj,dragObj,barObj) {
                 //改变开始时间和结束时间
                 var nowTaskNum = parseInt(objText[0]);
                 var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(86400*dragDayNum1))*1000);
-                var nowTaskTo = new Date(((nowTaskFrom)/1000+(86400*(_taskList[nowTaskNum].getWorkload())))*1000);
+                var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(86400*dragDayNum1))*1000);
                 _taskList[nowTaskNum].setFrom(nowTaskFrom);
                 _taskList[nowTaskNum].setTo(nowTaskTo);
             }else{
@@ -420,10 +486,11 @@ function dragBlock(obj,dragObj,barObj) {
                 //改变开始时间和结束时间
                 var nowTaskNum = parseInt(objText[0]);
                 var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(86400*dragDayNum1))*1000);
-                var nowTaskTo = new Date(((nowTaskFrom)/1000+(86400*(_taskList[nowTaskNum].getWorkload())))*1000);
+                var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(86400*dragDayNum1))*1000);
                 _taskList[nowTaskNum].setFrom(nowTaskFrom);
                 _taskList[nowTaskNum].setTo(nowTaskTo);
             }
+            Show();
         };
     };
     dragObj.onmousedown = function (event) {
@@ -464,6 +531,7 @@ function dragBlock(obj,dragObj,barObj) {
                 _taskList[nowTaskNum].setTo(nowTaskTo);
                 _taskList[nowTaskNum].setWordload(_taskList[nowTaskNum].getWorkload()-dragDayNum2);
             }
+            Show();
         };
     };
 }
@@ -531,7 +599,7 @@ function addTask() {
 
         g.Draw();
         g.drag();
-        g.Show();
+        Show();
     }else {
         var divFrom = from.split("-");
         var divTo = to.split("-");
@@ -555,7 +623,7 @@ function addTask() {
 
                     g.Draw();
                     g.drag();
-                    g.Show();
+                    Show();
                 }
             }
         }

@@ -12,7 +12,7 @@ input{
 }
 .main{
     position: absolute;
-    margin-left: 300px;
+    left: 300px;
     width: 1000px;
     height: auto;
 }
@@ -36,26 +36,28 @@ input{
 }
 .today_time{
     text-align: center;
+    height: 21px;
 }
 .time_axis{
-    position: relative;
-    float: left;
-    width: 100%;
-}
-.time_name{
-    position: relative;
-    float: left;
-    width: 180px;
-    height: 150px;
-    text-align: center;
-    line-height: 150px;
-}
-.time_point{
-    background-color: #408080;
+    overflow: auto;
     position: relative;
     float: left;
     width: 800px;
-    height: 150px;
+}
+.task_names{
+    position: relative;
+    float: left;
+    width: 180px;
+    height: 75px;
+    text-align: center;
+    line-height: 100px;
+}
+.time_point{
+    position: relative;
+    overflow: auto;
+    float: left;
+    width: 800px;
+    height: 100px;
 }
 .time_year{
     position: relative;
@@ -84,8 +86,8 @@ input{
 .gantt_{
     position: relative;
     float: left;
-    width: 100%;
     height: 400px;
+    width: 180px;
 }
 .item_name{
     position: relative;
@@ -93,38 +95,54 @@ input{
     overflow-x: scroll;
     float: left;
     width: 180px;
-    height: 400px;
+    height: 500px;
     background-color: #eeeeee;
 }
 .gantt_area{
     position: relative;
-    overflow:scroll;
     float: left;
-    width: 800px;
     height: 400px;
-    background-color: #cccccc;
 }
 .bottom{
     position: absolute;
-    margin-top: 650px;
     width: 100%;
+    left: -1px;
+    top: 600px;
     height: 100px;
     font-size: 20px;
     line-height: 100px;
     border: 1px solid black;
     text-align: center;
     background-color: orange;
+    overflow: hidden;
+}
+.bottom_item{
+    position: absolute;
+    left: 100px;
+    width: 500px;
+    height: 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bottom_work{
+    position: absolute;
+    width: 250px;
+    left: 650px;
+    height: 100px;
 }
 .item_table{
     position: absolute;
-    margin-top: 750px;
     width: 100%;
+    left: -2px;
+    top: 700px;
     height: auto;
     font-size: 20px;
     border: 1px solid black;
     text-align: center;
 }
 .bar_type{
+    position: relative;
     overflow: visible;
     display: block;
     float: left;
@@ -136,11 +154,12 @@ input{
     /*background-color: red;*/
 }
 .gantt_bulk{
+    border-radius: 10px;
     overflow: hidden;
     display: block;
     float: left;
     position: relative;
-    height: 30px;
+    height: 28px;
     line-height: 30px;
     text-align: center;
     white-space:nowrap;
@@ -149,6 +168,7 @@ input{
     background-color: orange;
     /*border-left: 1px solid black;
     border-right: 1px solid black;*/
+    /*border-bottom: 1px solid black;*/
     cursor: move;
     -moz-user-select:none;      //firefox文字不可选取
 }
@@ -193,8 +213,8 @@ input{
 .item_name_bar{
     position: relative;
     overflow: hidden;
-    width: 200px;
-    height: 30px;
+    width: 159px;
+    height: 29px;
     font-size: 18px;
     text-align: center;
     line-height: 30px;
@@ -202,7 +222,8 @@ input{
     text-overflow: ellipsis;
     background-color: blanchedalmond;
     border-right: 1px solid black;
-    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    cursor: default;
 }
 .items_div{
     display: inline-block;
@@ -222,6 +243,7 @@ input{
     text-align: center;
 }
 .zu_gantt_bulk{
+    border-radius: 10px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -252,9 +274,9 @@ input{
     text-overflow: ellipsis;
     position: relative;
     font-size: 18px;
-    width: 200px;
+    width: 160px;
     background-color: green;
     text-align: center;
     border-right: 1px solid black;
-    border-bottom: 1px solid black;
+    border-top: 1px solid black;
 }
