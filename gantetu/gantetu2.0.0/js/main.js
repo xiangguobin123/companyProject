@@ -345,6 +345,15 @@ function setUpGantt(){
                             zuName.innerHTML = item;
                             zuItemName.appendChild(zuName);
 
+/*                            var r = document.createElement("div");
+                            r.style.position = "absolute";
+                            r.style.width = "1000px";
+                            r.style.height = "1px";
+                            r.style.top = 147 + 30*(num-1) + "px";
+                            r.style.left = "0px";
+                            r.style.backgroundColor = "black";
+                            document.body.appendChild(r);*/
+
                             deleteAllZu(deleteGantt,itemsDiv);
                             dragAllZu(zuDiv,itemsDiv);
                             Show();
@@ -362,7 +371,7 @@ function setUpGantt(){
                              alert("组中的事项工作量不能超过组的工作量，请重新输入正确的工作量！");
                              }else*/{
                                 itemsDiv.appendChild(barType);
-                                itemsDiv.style.height = (parseInt(itemsDiv.style.height)+31) + "px";
+                                itemsDiv.style.height = (parseInt(itemsDiv.style.height)+30) + "px";
 
                                 ganttBulk = document.createElement("div");
                                 ganttBulk.id = item+"&"+workLoad+"&"+num;
@@ -403,12 +412,19 @@ function setUpGantt(){
                                 itemNameBar.innerHTML = item;
                                 zuItemName.appendChild(itemNameBar);
 
+                                /*var r = document.createElement("div");
+                                r.style.position = "absolute";
+                                r.style.width = "1000px";
+                                r.style.height = "1px";
+                                r.style.top = 147 + 30*(num-1) + "px";
+                                r.style.left = "0px";
+                                r.style.backgroundColor = "black";
+                                document.body.appendChild(r);*/
+
                                 num++;
                                 zuItemNameNum++;
 
                                 var huanhang = document.createElement("div");
-                                huanhang.style.height = "1px";
-                                huanhang.style.width = "1000px";
                                 huanhang.style.clear = "both";
                                 itemsDiv.appendChild(huanhang);
 
@@ -458,6 +474,15 @@ function setUpGantt(){
                         itemNameBar.id = "itemNameBar" + num;
                         itemNameBar.innerHTML = item;
                         itemName.appendChild(itemNameBar);
+
+                        /*var r = document.createElement("div");
+                        r.style.position = "absolute";
+                        r.style.width = "1000px";
+                        r.style.height = "1px";
+                        r.style.top = 147 + 30*(num-1) + "px";
+                        r.style.left = "0px";
+                        r.style.backgroundColor = "black";
+                        document.body.appendChild(r);*/
 
                         /*alertRight(dragGantt);*/
                         dragBlock(ganttBulk,barType,deleteGantt,dragGantt); //控制左右拖动和改变工作量

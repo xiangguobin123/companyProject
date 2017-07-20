@@ -232,7 +232,7 @@ input{
     width: 0;
     height: 0;
     cursor: move;
-    border: 1px dotted black;
+    /*border: 1px dotted black;*/
 }
 .zu_div{
     position: relative;
@@ -276,6 +276,7 @@ input{
     position: relative;
     font-size: 18px;
     width: 160px;
+    height: 29px;
     background-color: green;
     text-align: center;
     border-right: 1px solid black;
