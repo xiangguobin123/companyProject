@@ -240,7 +240,10 @@ var itemName;       //左边的事项名区域
 var itemsDiv;       //组区域
 var zuDiv;          //组名区域
 var zuDivItem;
+var zutextDiv;        //显示组名
 var _taskList = new Array();
+var _leList = new Array();      //用来记录当前有多少事项，数组本身没有意义，数组的长度有意义
+var todayRemindDiv;     //用于当前时间提示
 
 function setUpGantt(){
     item = document.getElementById('item').value;
@@ -261,245 +264,270 @@ function setUpGantt(){
         if((Date.parse(task.getFrom()))>=(Date.parse(task.getTo()))){
             alert("请确认开始时间在结束时间之前！！！");
         }else{
-            _taskList.push(task);
-            workLoad = task.getWorkload();
-
-            var _maxDate = new Date();
-            var _minDate = new Date();
-            if(_taskList.length > 0) {
-                /*_maxDate.setFullYear(_taskList[0].getTo().getFullYear(),
-                 _taskList[0].getTo().getMonth(), _taskList[0].getTo().getDate());
-                 _minDate.setFullYear(_taskList[0].getFrom().getFullYear(),
-                 _taskList[0].getFrom().getMonth(), _taskList[0].getFrom().getDate());*/
-                for (var i = 0; i < _taskList.length; i++) {
-                    if (_taskList[i] != undefined) {
-                        if (Date.parse(_taskList[i].getFrom()) < Date.parse(_minDate))
-                            _minDate.setFullYear(_taskList[i].getFrom().getFullYear(),
-                                _taskList[i].getFrom().getMonth(), _taskList[i].getFrom().getDate());
-                        if (Date.parse(_taskList[i].getTo()) > Date.parse(_maxDate))
-                            _maxDate.setFullYear(_taskList[i].getTo().getFullYear(),
-                                _taskList[i].getTo().getMonth(), _taskList[i].getTo().getDate());
-                    }
-                }
-            }   //找到最大和最小的时间
-
-            timePoint();
-            if(zuCheck){
-                var zuDivId = "item&"+num;
-                if(checknum == 1){
-                    zuItemNameNum = 1;
-                    var zuText;
-                    itemsDiv = document.createElement("div");
-                    addClass(itemsDiv,"items_div");
-                    itemsDiv.style.height = 30 + "px";
-                    itemsDiv.id = "zu&"+num;
-                    itemsDiv.style.width = (workLoad*28) + "px";
-                    ganttArea.appendChild(itemsDiv);
-
-                    zuDiv = document.createElement("div");
-                    addClass(zuDiv,"zu_div");
-                    /*zuDiv.innerHTML = item;
-                     zuDivItem = zuDiv.innerHTML;*/
-                    zuDiv.id = item+"&"+workLoad+"&"+num;
-                    zuDiv.title = "事项："+item+" "+"工作量："+workLoad;
-                    zuDiv.style.width = (workLoad*28) + "px";
-                    itemsDiv.appendChild(zuDiv);
-
-                    var zutextDiv = document.createElement("div");
-                    zutextDiv.innerHTML = item;
-                    zutextDiv.style.float = "left";
-                    zutextDiv.style.overflow = "hidden";
-                    zutextDiv.style.whiteSpace = "nowrap";
-                    zutextDiv.style.textOverflow = "ellipsis";
-                    zutextDiv.style.width = (workLoad*28-25) + "px";
-                    zuDiv.appendChild(zutextDiv);
-
-                    deleteGantt = document.createElement("button");
-                    addClass(deleteGantt,"delete_gantt");
-                    deleteGantt.innerHTML = "×";
-                    deleteGantt.style.float = "right";
-                    deleteGantt.id="deleteAllZu"+"&"+num;
-                    deleteGantt.style.float = "right";
-                    zuDiv.appendChild(deleteGantt);
-
-                    zuItemName = document.createElement("div");
-                    addClass(zuItemName,"zu_item_name");
-                    zuItemName.title = item;
-                    zuItemName.id = "zuItemName" + num;
-                    itemName.appendChild(zuItemName);
-
-                    var zuName = document.createElement("div");
-                    addClass(zuName,"zu_name");
-                    zuName.id = "zuName&" + num;
-                    zuName.innerHTML = item;
-                    zuItemName.appendChild(zuName);
-
-                    deleteAllZu(deleteGantt,itemsDiv);
-                    dragAllZu(zuDiv,itemsDiv);
-                    Show();
-
-                    checknum ++;
-                    num++;
-                    zuNum++;
+            if((task.getFrom().getMinutes() != 0)&&(task.getFrom().getMinutes() != 30)){
+                alert("请确认开始时间是半小时制的！！！");
+            }else{
+                if((task.getTo().getMinutes() != 0)&&(task.getTo().getMinutes() != 30)){
+                    alert("请确认结束时间是半小时制！！！");
                 }else{
-                    barType = document.createElement("div");
-                    barType.id = "barType&"+num+"&"+"zu";
-                    addClass(barType,"bar_type");
-                    barType.style.left = 0 + "px";
-                    barType.style.width = (workLoad*28) + "px";
-                    /*if(parseInt(barType.style.width)>parseInt(itemsDiv.style.width)){
-                     alert("组中的事项工作量不能超过组的工作量，请重新输入正确的工作量！");
-                     }else*/{
-                        itemsDiv.appendChild(barType);
-                        itemsDiv.style.height = (parseInt(itemsDiv.style.height)+31) + "px";
+                    _taskList.push(task);
+                    _leList.push(task);
+                    workLoad = task.getWorkload();
+
+                    var _maxDate = new Date();
+                    var _minDate = new Date();
+                    if(_taskList.length > 0) {
+                        /*_maxDate.setFullYear(_taskList[0].getTo().getFullYear(),
+                         _taskList[0].getTo().getMonth(), _taskList[0].getTo().getDate());
+                         _minDate.setFullYear(_taskList[0].getFrom().getFullYear(),
+                         _taskList[0].getFrom().getMonth(), _taskList[0].getFrom().getDate());*/
+                        for (var i = 0; i < _taskList.length; i++) {
+                            if (_taskList[i] != undefined) {
+                                if (Date.parse(_taskList[i].getFrom()) < Date.parse(_minDate))
+                                    _minDate.setFullYear(_taskList[i].getFrom().getFullYear(),
+                                        _taskList[i].getFrom().getMonth(), _taskList[i].getFrom().getDate());
+                                if (Date.parse(_taskList[i].getTo()) > Date.parse(_maxDate))
+                                    _maxDate.setFullYear(_taskList[i].getTo().getFullYear(),
+                                        _taskList[i].getTo().getMonth(), _taskList[i].getTo().getDate());
+                            }
+                        }
+                    }   //找到最大和最小的时间
+
+                    timePoint();
+                    if(zuCheck){
+                        var zuDivId = "item&"+num;
+                        if(checknum == 1){
+                            zuItemNameNum = 1;
+                            var zuText;
+                            itemsDiv = document.createElement("div");
+                            addClass(itemsDiv,"items_div");
+                            itemsDiv.style.height = 30 + "px";
+                            itemsDiv.id = "zu&"+num;
+                            itemsDiv.style.width = (workLoad*28) + "px";
+                            ganttArea.appendChild(itemsDiv);
+
+                            zuDiv = document.createElement("div");
+                            addClass(zuDiv,"zu_div");
+                            /*zuDiv.innerHTML = item;
+                             zuDivItem = zuDiv.innerHTML;*/
+                            zuDiv.id = item+"&"+workLoad+"&"+num;
+                            zuDiv.title = "事项："+item+" "+"工作量："+workLoad;
+                            zuDiv.style.width = (workLoad*28) + "px";
+                            itemsDiv.appendChild(zuDiv);
+
+                            zutextDiv = document.createElement("div");
+                            zutextDiv.innerHTML = item;
+                            zutextDiv.style.float = "left";
+                            zutextDiv.style.overflow = "hidden";
+                            zutextDiv.style.whiteSpace = "nowrap";
+                            zutextDiv.style.textOverflow = "ellipsis";
+                            zutextDiv.style.width = (workLoad*28-25) + "px";
+                            zutextDiv.style.height = 30 + "px";
+                            zuDiv.appendChild(zutextDiv);
+
+                            deleteGantt = document.createElement("button");
+                            addClass(deleteGantt,"delete_gantt");
+                            deleteGantt.innerHTML = "×";
+                            deleteGantt.style.float = "right";
+                            deleteGantt.id="deleteAllZu"+"&"+num;
+                            deleteGantt.style.float = "right";
+                            zuDiv.appendChild(deleteGantt);
+
+                            zuItemName = document.createElement("div");
+                            addClass(zuItemName,"zu_item_name");
+                            zuItemName.title = item;
+                            zuItemName.id = "zuItemName" + num;
+                            itemName.appendChild(zuItemName);
+
+                            var zuName = document.createElement("div");
+                            addClass(zuName,"zu_name");
+                            zuName.id = "zuName&" + num;
+                            zuName.innerHTML = item;
+                            zuItemName.appendChild(zuName);
+
+                            deleteAllZu(deleteGantt,itemsDiv);
+                            dragAllZu(zuDiv,itemsDiv);
+                            Show();
+
+                            checknum ++;
+                            num++;
+                            zuNum++;
+                        }else{
+                            barType = document.createElement("div");
+                            barType.id = "barType&"+num+"&"+"zu";
+                            addClass(barType,"bar_type");
+                            barType.style.left = 0 + "px";
+                            barType.style.width = (workLoad*28) + "px";
+                            /*if(parseInt(barType.style.width)>parseInt(itemsDiv.style.width)){
+                             alert("组中的事项工作量不能超过组的工作量，请重新输入正确的工作量！");
+                             }else*/{
+                                itemsDiv.appendChild(barType);
+                                itemsDiv.style.height = (parseInt(itemsDiv.style.height)+31) + "px";
+
+                                ganttBulk = document.createElement("div");
+                                ganttBulk.id = item+"&"+workLoad+"&"+num;
+                                ganttBulk.title = "事项："+item+" "+"工作量："+workLoad;
+                                /*ganttBulk.innerHTML = item;*/
+                                ganttBulk.style.backgroundColor = "";
+                                addClass(ganttBulk,"zu_gantt_bulk");
+                                ganttBulk.style.width = (workLoad*28) + "px";
+                                barType.appendChild(ganttBulk);
+
+                                var textDiv = document.createElement("div");
+                                textDiv.innerHTML = item;
+                                textDiv.style.float = "left";
+                                textDiv.style.overflow = "hidden";
+                                textDiv.style.whiteSpace = "nowrap";
+                                textDiv.style.textOverflow = "ellipsis";
+                                textDiv.style.width = (workLoad*28-25) + "px";
+                                ganttBulk.appendChild(textDiv);
+
+                                deleteGantt = document.createElement("button");
+                                addClass(deleteGantt,"delete_gantt");
+                                deleteGantt.style.float = "right";
+                                deleteGantt.innerHTML = "×";
+                                deleteGantt.id="delete"+"&"+num+"&"+zuNum;
+                                ganttBulk.appendChild(deleteGantt);
+
+                                dragGantt = document.createElement("div");
+                                dragGantt.style.float = "right";
+                                addClass(dragGantt,"drag_gantt");
+                                ganttBulk.appendChild(dragGantt);
+
+                                itemNameBar = document.createElement("div");
+                                addClass(itemNameBar,"item_name_bar");
+                                itemNameBar.title = item;
+                                itemNameBar.id = "itemNameBar" + num;
+                                itemNameBar.style.fontSize = "15px";
+                                itemNameBar.style.backgroundColor = "green";
+                                itemNameBar.innerHTML = item;
+                                zuItemName.appendChild(itemNameBar);
+
+                                num++;
+                                zuItemNameNum++;
+
+                                var huanhang = document.createElement("div");
+                                huanhang.style.height = "1px";
+                                huanhang.style.width = "1000px";
+                                huanhang.style.clear = "both";
+                                itemsDiv.appendChild(huanhang);
+
+                                deleteZuSingle(itemsDiv,zuItemName,deleteGantt);
+                                dragZuSingle(ganttBulk,barType,zuDiv,zutextDiv,dragGantt,itemsDiv,zuItemName,textDiv);
+                                Show();
+                            }
+                        }
+                    }else{
+                        var huanhang = document.createElement("div");
+                        huanhang.style.clear = "both";
+                        ganttArea.appendChild(huanhang);
+
+                        checknum = 1;
+                        barType = document.createElement("div");
+                        barType.id = "barType&"+num;
+                        barType.style.width = (workLoad*28) + 28 + "px";
+                        addClass(barType,"bar_type");
+                        ganttArea.appendChild(barType);
 
                         ganttBulk = document.createElement("div");
-                        ganttBulk.id = item+"&"+workLoad+"&"+num;
+                        ganttBulk.id = item+"&"+workLoad;
                         ganttBulk.title = "事项："+item+" "+"工作量："+workLoad;
-                        /*ganttBulk.innerHTML = item;*/
-                        ganttBulk.style.backgroundColor = "";
-                        addClass(ganttBulk,"zu_gantt_bulk");
+                        ganttBulk.innerHTML = item;
+                        addClass(ganttBulk,"gantt_bulk");
                         ganttBulk.style.width = (workLoad*28) + "px";
+                        //设置文字不可选取,方便拖拽
+                        // IE
+                        ganttBulk.unselectable = "on";
+                        ganttBulk.onselectstart="javascript:return false;";
                         barType.appendChild(ganttBulk);
 
-                        var textDiv = document.createElement("div");
-                        textDiv.innerHTML = item;
-                        textDiv.style.float = "left";
-                        textDiv.style.overflow = "hidden";
-                        textDiv.style.whiteSpace = "nowrap";
-                        textDiv.style.textOverflow = "ellipsis";
-                        textDiv.style.width = (workLoad*28-25) + "px";
-                        ganttBulk.appendChild(textDiv);
+                        dragGantt = document.createElement("div");
+                        addClass(dragGantt,"drag_gantt");
+                        dragGantt.id = "drag&"+num;
+                        barType.appendChild(dragGantt);
 
                         deleteGantt = document.createElement("button");
                         addClass(deleteGantt,"delete_gantt");
-                        deleteGantt.style.float = "right";
                         deleteGantt.innerHTML = "×";
-                        deleteGantt.id="delete"+"&"+num+"&"+zuNum;
-                        ganttBulk.appendChild(deleteGantt);
-
-                        dragGantt = document.createElement("div");
-                        dragGantt.style.float = "right";
-                        addClass(dragGantt,"drag_gantt");
-                        ganttBulk.appendChild(dragGantt);
+                        deleteGantt.id="delete"+"&"+num;
+                        barType.appendChild(deleteGantt);
 
                         itemNameBar = document.createElement("div");
                         addClass(itemNameBar,"item_name_bar");
                         itemNameBar.title = item;
                         itemNameBar.id = "itemNameBar" + num;
-                        itemNameBar.style.fontSize = "15px";
-                        itemNameBar.style.backgroundColor = "green";
                         itemNameBar.innerHTML = item;
-                        zuItemName.appendChild(itemNameBar);
+                        itemName.appendChild(itemNameBar);
 
+                        /*alertRight(dragGantt);*/
+                        dragBlock(ganttBulk,barType,deleteGantt,dragGantt); //控制左右拖动和改变工作量
+                        /*changeWorkload(ganttBulk);*/
+                        deleteF(ganttArea,itemName,deleteGantt);       //删除
                         num++;
-                        zuItemNameNum++;
 
                         var huanhang = document.createElement("div");
-                        huanhang.style.height = "1px";
-                        huanhang.style.width = "1000px";
                         huanhang.style.clear = "both";
-                        itemsDiv.appendChild(huanhang);
-
-                        deleteZuSingle(itemsDiv,zuItemName,deleteGantt);
-                        dragZuSingle(ganttBulk,barType,zuDiv,dragGantt,itemsDiv,zuItemName,textDiv);
-                        Show();
+                        ganttArea.appendChild(huanhang);
                     }
-                }
-            }else{
-                var huanhang = document.createElement("div");
-                huanhang.style.clear = "both";
-                ganttArea.appendChild(huanhang);
 
-                checknum = 1;
-                barType = document.createElement("div");
-                barType.id = "barType&"+num;
-                barType.style.width = (workLoad*28) + 28 + "px";
-                addClass(barType,"bar_type");
-                ganttArea.appendChild(barType);
+                    //添加一块红色区域用于今日的提醒
+                    var nowHour = new Date().getHours();
+                    var todayLeft = document.getElementById('GC_Today'+nowHour).offsetLeft;
+                    todayRemindDiv = document.createElement("div");
+                    todayRemindDiv.style.position = "absolute";
+                    todayRemindDiv.style.top = 0 + "px";
+                    todayRemindDiv.style.left = todayLeft + "px";
+                    todayRemindDiv.style.width = "28px";
+                    todayRemindDiv.style.height = 30 * _leList.length + "px";
+                    todayRemindDiv.style.backgroundColor = "red";
+                    todayRemindDiv.style.zIndex = "0";
+                    document.getElementById('colArea').appendChild(todayRemindDiv);
 
-                ganttBulk = document.createElement("div");
-                ganttBulk.id = item+"&"+workLoad;
-                ganttBulk.title = "事项："+item+" "+"工作量："+workLoad;
-                ganttBulk.innerHTML = item;
-                addClass(ganttBulk,"gantt_bulk");
-                ganttBulk.style.width = (workLoad*28) + "px";
-                //设置文字不可选取,方便拖拽
-                // IE
-                ganttBulk.unselectable = "on";
-                ganttBulk.onselectstart="javascript:return false;";
-                barType.appendChild(ganttBulk);
-
-                dragGantt = document.createElement("div");
-                addClass(dragGantt,"drag_gantt");
-                dragGantt.id = "drag&"+num;
-                barType.appendChild(dragGantt);
-
-                deleteGantt = document.createElement("button");
-                addClass(deleteGantt,"delete_gantt");
-                deleteGantt.innerHTML = "×";
-                deleteGantt.id="delete"+"&"+num;
-                barType.appendChild(deleteGantt);
-
-                itemNameBar = document.createElement("div");
-                addClass(itemNameBar,"item_name_bar");
-                itemNameBar.title = item;
-                itemNameBar.id = "itemNameBar" + num;
-                itemNameBar.innerHTML = item;
-                itemName.appendChild(itemNameBar);
-
-                /*alertRight(dragGantt);*/
-                dragBlock(ganttBulk,barType,deleteGantt,dragGantt); //控制左右拖动和改变工作量
-                /*changeWorkload(ganttBulk);*/
-                deleteF(ganttArea,itemName,deleteGantt);       //删除
-                num++;
-
-                var huanhang = document.createElement("div");
-                huanhang.style.clear = "both";
-                ganttArea.appendChild(huanhang);
-            }
-
-            //添加一块红色区域用于今日的提醒
-            /*var nowHour = new Date().getHours();
-            var todayLeft = document.getElementById('GC_Today'+nowHour).offsetLeft;
-            var todayRemindDiv = document.createElement("div");
-            todayRemindDiv.style.position = "absolute";
-            todayRemindDiv.style.top = 0 + "px";
-            todayRemindDiv.style.left = todayLeft + "px";
-            todayRemindDiv.style.width = "28px";
-            todayRemindDiv.style.height = 30 * _taskList.length + "px";
-            todayRemindDiv.style.backgroundColor = "red";
-            todayRemindDiv.style.zIndex = "0";
-            ganttArea.appendChild(todayRemindDiv);*/
-
-            _minDate.setHours(0);
-            _minDate.setMinutes(0);
-            _minDate.setSeconds(0);
-            //对齐
-            for(var i=0;i<_taskList.length;i++){
-                if(_taskList[i]!=undefined){
-                    _offSet = (Date.parse(_taskList[i].getFrom()) - Date.parse(_minDate)) /
-                        (60 * 60 * 1000);
-                    if(document.getElementById('barType&'+(i+1)))
-                        document.getElementById('barType&'+(i+1)).style.left = _offSet * 28 +"px";
-                    if(document.getElementById('zu&'+(i+1))) {
-                        document.getElementById('zu&' + (i + 1)).style.left = _offSet * 28 + "px";
+                    _minDate.setHours(0);
+                    _minDate.setMinutes(0);
+                    _minDate.setSeconds(0);
+                    //对齐
+                    for(var i=0;i<_taskList.length;i++){
+                        if(_taskList[i]!=undefined){
+                            _offSet = (Date.parse(_taskList[i].getFrom()) - Date.parse(_minDate)) /
+                                (60 * 60 * 1000);
+                            if(document.getElementById('barType&'+(i+1)))
+                                document.getElementById('barType&'+(i+1)).style.left = _offSet * 28 +"px";
+                            if(document.getElementById('zu&'+(i+1))) {
+                                document.getElementById('zu&' + (i + 1)).style.left = _offSet * 28 + "px";
+                            }
+                            if(document.getElementById('barType&'+(i+1)+"&zu")) {
+                                document.getElementById('barType&' + (i + 1) + "&zu").style.left = _offSet * 28 -
+                                    parseInt(document.getElementById('barType&' + (i + 1) + "&zu").parentNode.style.left) + "px";
+                            }
+                        }
                     }
-                    if(document.getElementById('barType&'+(i+1)+"&zu")) {
-                        document.getElementById('barType&' + (i + 1) + "&zu").style.left = _offSet * 28 -
-                            parseInt(document.getElementById('barType&' + (i + 1) + "&zu").parentNode.style.left) + "px";
+                    var colLine = document.getElementsByClassName("ColLine");
+                    for (var i=0;i<colLine.length;i++){
+                        colLine[i].style.height = 30 * (_leList.length) + "px";
                     }
+                    Show();
+                    /*ColorChange();*/
                 }
             }
-
-            var colLine = document.getElementsByClassName("ColLine");
-            for (var i=0;i<colLine.length;i++){
-                colLine[i].style.height = 30 * (_taskList.length) + "px";
-            }
-            Show();
         }
     }
 }
+//颜色变化
+var ColorChange = function () {
+    var now = new Date();
+    for (var i = 0;i<_taskList.length;i++){
+        if(Date.parse(_taskList[i].getTo()) < Date.parse(now)){
+            document.getElementById(_taskList[i].getTask() + '&' + _taskList[i].getWorkload()).style.backgroundColor = "chocolate";
+        }
+        if(Date.parse(_taskList[i].getFrom()) > Date.parse(now)){
+            document.getElementById(_taskList[i].getTask() + '&' + _taskList[i].getWorkload()).style.backgroundColor = "orange";
+        }
+        if((Date.parse(_taskList[i].getFrom())<=Date.parse(now))&&(Date.parse(_taskList[i].getTo())>=Date.parse(now))){
+            document.getElementById(_taskList[i].getTask() + '&' + _taskList[i].getWorkload()).style.backgroundColor = "green";
+        }
+    }
+};
 
 //画时间轴的函数
 function timePoint() {
@@ -538,10 +566,9 @@ function timePoint() {
         //---- Fix _maxDate value for better displaying-----
         // Add at least 5 days
 
-        if (_maxDate.getMonth() == 11) //December
+        /*if (_maxDate.getMonth() == 11) //December
         {
-
-            if (_maxDate.getDay() + 5 > getDaysInMonth(_maxDate.getMonth() + 1,
+            if (_maxDate.getDate() + 5 > getDaysInMonth(_maxDate.getMonth() + 1,
                     _maxDate.getFullYear()))
             //The fifth day of next month will be used
                 _maxDate.setFullYear(_maxDate.getFullYear() + 1, 1, 5);
@@ -550,7 +577,7 @@ function timePoint() {
                 _maxDate.setFullYear(_maxDate.getFullYear(), _maxDate.getMonth(),
                     _maxDate.getDate() + 5);
         } else {
-            if (_maxDate.getDay() + 5 > getDaysInMonth(_maxDate.getMonth() + 1,
+            if (_maxDate.getDate() + 5 > getDaysInMonth(_maxDate.getMonth() + 1,
                     _maxDate.getFullYear()))
             //The fifth day of next month will be used
                 _maxDate.setFullYear(_maxDate.getFullYear(), _maxDate.getMonth() + 1,
@@ -559,7 +586,9 @@ function timePoint() {
             //The fifth day of next month will be used
                 _maxDate.setFullYear(_maxDate.getFullYear(), _maxDate.getMonth(),
                     _maxDate.getDate() + 5);
-        }
+        }*/
+        _maxDate.setFullYear(_maxDate.getFullYear(), _maxDate.getMonth(),
+            _maxDate.getDate() + 5);
 
         //--------------------------------------------------
 
@@ -868,11 +897,18 @@ function deleteF(outerObj,outItemNameObj,obj) {
 
         outerObj.removeChild(document.getElementById("barType&"+t[1]));
         delete _taskList[parseInt(t[1]-1)];
+        _leList.splice(0,1);
         outItemNameObj.removeChild(document.getElementById("itemNameBar"+t[1]));
+
+        var colLine = document.getElementsByClassName("ColLine");
+        for (var i=0;i<colLine.length;i++){
+            colLine[i].style.height = 30 * (_leList.length) + "px";
+        }
+        todayRemindDiv.style.height = 30 * _leList.length + "px";
 
         document.onmouseup = function () {
             Show();
-        }
+        };
     };
 }
 
@@ -887,6 +923,7 @@ function deleteAllZu(obj,outObj) {
         itemName.removeChild(document.getElementById("zuItemName"+t[1]));
         checknum = 1;
         delete _taskList[parseInt(t[1])-1];
+        _leList.splice(0,1);
 
         //计算组内有几个元素
         var childs= outObj.childNodes;
@@ -895,8 +932,15 @@ function deleteAllZu(obj,outObj) {
                 var cID = childs[i].id;
                 var cText = cID.split("&");
                 delete _taskList[parseInt(cText[1])-1];
+                _leList.splice(0,1);
             }
         }
+
+        var colLine = document.getElementsByClassName("ColLine");
+        for (var i=0;i<colLine.length;i++){
+            colLine[i].style.height = 30 * (_leList.length) + "px";
+        }
+        todayRemindDiv.style.height = 30 * _leList.length + "px";
         Show();
     };
 }
@@ -913,6 +957,47 @@ function deleteZuSingle(outerObj,outItemNameObj,obj) {
 
         outerObj.style.height = (parseInt(outerObj.style.height)-30) + "px";
         delete _taskList[parseInt(t[1])-1];
+        _leList.splice(0,1);
+
+        var colLine = document.getElementsByClassName("ColLine");
+        for (var i=0;i<colLine.length;i++){
+            colLine[i].style.height = 30 * (_leList.length) + "px";
+        }
+        todayRemindDiv.style.height = 30 * _leList.length + "px";
+
+        //想着在删除组中最后一个事项时将组名和这个组区域都删除
+/*        var zuText = outerObj.id.split("&");
+        var childs_ = outerObj.childNodes;
+        var check_Num = 0;
+        for(var i=0;i<childs_.length;i++){
+            if(childs_[i].hasChildNodes()){
+                check_Num++;
+            }
+        }
+        if(check_Num == 2){
+            var now_left = document.getElementById(_taskList[parseInt(t[1])-1].getTask() + '&' + _taskList[parseInt(t[1])-1].getWorkload() + '&' + t[1]).style.left;
+            if(confirm("你确定要删除组内的最后一个事项吗？这会导致整个组也会删除，你确定这样做吗？") == true){
+                outerObj.removeChild(document.getElementById("barType&"+t[1]+"&zu"));
+                outItemNameObj.removeChild(document.getElementById("itemNameBar"+t[1]));
+                outerObj.style.height = (parseInt(outerObj.style.height)-30) + "px";
+                delete _taskList[parseInt(t[1])-1];
+
+                var outText = outerObj.id.split("&");
+                ganttArea.removeChild(document.getElementById('zu&'+outText[1]));
+                itemName.removeChild(document.getElementById("zuItemName"+outText[1]));
+                checknum = 1;
+                delete _taskList[parseInt(outText[1])-1];
+            }else {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        }else{
+            outerObj.removeChild(document.getElementById("barType&"+t[1]+"&zu"));
+            outItemNameObj.removeChild(document.getElementById("itemNameBar"+t[1]));
+
+            outerObj.style.height = (parseInt(outerObj.style.height)-30) + "px";
+            delete _taskList[parseInt(t[1])-1];
+        }*/
         Show();
     };
 }
@@ -957,46 +1042,51 @@ function dragAllZu(obj,zuAllAreaObj) {
                     dragDayNum1 = parseInt(leftChange / 14);         //保留整数部分
                     zuAllAreaObj.style.left = formerLeft + (dragDayNum1 * 14) + "px";
                     //改变整个组的开始时间和结束时间
-                    var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
-                    var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
-                    _taskList[nowTaskNum].setFrom(nowTaskFrom);
-                    _taskList[nowTaskNum].setTo(nowTaskTo);
+                    if(_taskList[nowTaskNum]!=undefined){
+                        var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
+                        var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
+                        _taskList[nowTaskNum].setFrom(nowTaskFrom);
+                        _taskList[nowTaskNum].setTo(nowTaskTo);
 
-                    //对组内每个元素的开始时间和结束时间进行变化
-                    var childs= zuAllAreaObj.childNodes;
-                    for(var i = 1;i<childs.length;i++) {
-                        if (childs[i].hasChildNodes()) {
-                            var cID = childs[i].id;
-                            var cText = cID.split("&");
+                        //对组内每个元素的开始时间和结束时间进行变化
+                        var childs= zuAllAreaObj.childNodes;
+                        for(var i = 1;i<childs.length;i++) {
+                            if (childs[i].hasChildNodes()) {
+                                var cID = childs[i].id;
+                                var cText = cID.split("&");
 
-                            var nowTFrom = new Date(((_taskList[parseInt(cText[1])-1].getFrom())/1000+(1800*dragDayNum1))*1000);
-                            var nowTTo = new Date(((_taskList[parseInt(cText[1])-1].getTo())/1000+(1800*dragDayNum1))*1000);
-                            _taskList[parseInt(cText[1])-1].setFrom(nowTFrom);
-                            _taskList[parseInt(cText[1])-1].setTo(nowTTo);
+                                var nowTFrom = new Date(((_taskList[parseInt(cText[1])-1].getFrom())/1000+(1800*dragDayNum1))*1000);
+                                var nowTTo = new Date(((_taskList[parseInt(cText[1])-1].getTo())/1000+(1800*dragDayNum1))*1000);
+                                _taskList[parseInt(cText[1])-1].setFrom(nowTFrom);
+                                _taskList[parseInt(cText[1])-1].setTo(nowTTo);
+                            }
                         }
                     }
                 }else{
                     dragDayNum1 = parseInt(Math.abs(leftChange) / 14) + 1;
                     zuAllAreaObj.style.left = formerLeft - (dragDayNum1 * 14) + "px";
-                    //改变整个开始时间和结束时间
-                    var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
-                    var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
-                    _taskList[nowTaskNum].setFrom(nowTaskFrom);
-                    _taskList[nowTaskNum].setTo(nowTaskTo);
+                    if(_taskList[nowTaskNum]!=undefined){
+                        //改变整个开始时间和结束时间
+                        var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
+                        var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
+                        _taskList[nowTaskNum].setFrom(nowTaskFrom);
+                        _taskList[nowTaskNum].setTo(nowTaskTo);
 
-                    //对组内每个元素的开始时间和结束时间进行变化
-                    var childs= zuAllAreaObj.childNodes;
-                    for(var i = 1;i<childs.length;i++) {
-                        if (childs[i].hasChildNodes()) {
-                            var cID = childs[i].id;
-                            var cText = cID.split("&");
+                        //对组内每个元素的开始时间和结束时间进行变化
+                        var childs= zuAllAreaObj.childNodes;
+                        for(var i = 1;i<childs.length;i++) {
+                            if (childs[i].hasChildNodes()) {
+                                var cID = childs[i].id;
+                                var cText = cID.split("&");
 
-                            var nowTFrom = new Date(((_taskList[parseInt(cText[1])-1].getFrom())/1000-(1800*dragDayNum1))*1000);
-                            var nowTTo = new Date(((_taskList[parseInt(cText[1])-1].getTo())/1000-(1800*dragDayNum1))*1000);
-                            _taskList[parseInt(cText[1])-1].setFrom(nowTFrom);
-                            _taskList[parseInt(cText[1])-1].setTo(nowTTo);
+                                var nowTFrom = new Date(((_taskList[parseInt(cText[1])-1].getFrom())/1000-(1800*dragDayNum1))*1000);
+                                var nowTTo = new Date(((_taskList[parseInt(cText[1])-1].getTo())/1000-(1800*dragDayNum1))*1000);
+                                _taskList[parseInt(cText[1])-1].setFrom(nowTFrom);
+                                _taskList[parseInt(cText[1])-1].setTo(nowTTo);
+                            }
                         }
                     }
+
                 }
             }
             Show();
@@ -1005,7 +1095,8 @@ function dragAllZu(obj,zuAllAreaObj) {
 }
 
 //拖动组中的单项
-function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj) {
+var outWidth = 0;       //记录每次运算后的组的宽度，在删除最后一个事项时组不跳跃
+function dragZuSingle(obj,barObj,zuNameObj,zutextObj,dragObj,outObj,outItemNameObj,textObj) {
     var disX = 0;
     var disY = 0;
     var x = 0;
@@ -1014,8 +1105,6 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
     var objRight;
     var zuNameObjRight;
     var childs;
-    var maxRight;
-    var mixLeft;
     var nowEv;
     var formerLeft = 0;
     var nowLeft = 0;
@@ -1052,6 +1141,7 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
 
             zuNameObjRight = zuNameObj.offsetLeft + parseInt(zuNameObj.style.width);
             if(objRight>zuNameObjRight){
+                zutextObj.style.width = objRight - 25 + "px";
                 zuNameObj.style.width = objRight+"px";
                 outObj.style.width = zuNameObj.style.width;
             }
@@ -1061,6 +1151,9 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
             document.onmousemove = null;
             document.onmouseup = null;
 
+            var maxRight = 0;
+            var mixLeft = 0;
+
             var dragDayNum1 = 0;                 //左右拖动超过的块数
             var nowTaskNum = parseInt(text[2])-1;
             if(nowLeft >   0){
@@ -1069,20 +1162,24 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
                     dragDayNum1 = parseInt(leftChange / 14);         //保留整数部分
                     barObj.style.left = formerLeft + (dragDayNum1 * 14) + "px";
 
-                    //改变开始时间和结束时间
-                    var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
-                    var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
-                    _taskList[nowTaskNum].setFrom(nowTaskFrom);
-                    _taskList[nowTaskNum].setTo(nowTaskTo);
+                    if(_taskList[nowTaskNum]!=undefined){
+                        //改变开始时间和结束时间
+                        var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
+                        var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
+                        _taskList[nowTaskNum].setFrom(nowTaskFrom);
+                        _taskList[nowTaskNum].setTo(nowTaskTo);
+                    }
                 }else{
                     dragDayNum1 = parseInt(Math.abs(leftChange) / 14) + 1;
                     barObj.style.left = formerLeft - (dragDayNum1 * 14) + "px";
 
-                    //改变开始时间和结束时间
-                    var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
-                    var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
-                    _taskList[nowTaskNum].setFrom(nowTaskFrom);
-                    _taskList[nowTaskNum].setTo(nowTaskTo);
+                    if(_taskList[nowTaskNum]!=undefined){
+                        //改变开始时间和结束时间
+                        var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
+                        var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
+                        _taskList[nowTaskNum].setFrom(nowTaskFrom);
+                        _taskList[nowTaskNum].setTo(nowTaskTo);
+                    }
                 }
             }
 
@@ -1090,37 +1187,57 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
             childs= outObj.childNodes;
             for(var i = 1;i<childs.length;i++) {
                 if(childs[i].hasChildNodes()){
-                    maxRight = childs[i].offsetLeft + parseInt(childs[i].style.width);
-                    mixLeft = childs[i].offsetLeft;
+                    maxRight = parseInt(childs[i].style.left) + parseInt(childs[i].style.width);
+                    mixLeft = parseInt(childs[i].style.left);
                     var checkObj=childs[i];
                     break;
                 }
             }
             for(var i = 1;i<childs.length;i++) {
                 if(childs[i].hasChildNodes()){
-                    if (maxRight < childs[i].offsetLeft + parseInt(childs[i].style.width)) {
-                        maxRight = childs[i].offsetLeft + parseInt(childs[i].style.width);
+                    if (maxRight < parseInt(childs[i].style.left) + parseInt(childs[i].style.width)) {
+                        maxRight = parseInt(childs[i].style.left) + parseInt(childs[i].style.width);
                     }
-                    if (mixLeft > childs[i].offsetLeft) {
-                        mixLeft = childs[i].offsetLeft;
+                    if (mixLeft > parseInt(childs[i].style.left)) {
+                        mixLeft = parseInt(childs[i].style.left);
                         checkObj = childs[i];
                     }
                 }
             }
-            zuNameObj.style.width = (maxRight)+"px";
+
+            if(mixLeft == 0 && maxRight ==0){
+                mixLeft = 0;
+                maxRight = outWidth;
+            }
+
+            zuNameObj.style.width = (maxRight-mixLeft)+"px";
+            zutextObj.style.width = maxRight-mixLeft - 25 + "px";
             outObj.style.width = zuNameObj.style.width;
+            outObj.style.left = parseInt(outObj.style.left) + mixLeft + "px";
+            for(var i = 1;i<childs.length;i++) {
+                if(childs[i].hasChildNodes()){
+                    childs[i].style.left = parseInt(childs[i].style.left) - mixLeft + "px";
+                }
+            }
             zuNameObj.style.left = 0;
-            checkObj.style.left = 0;
 
-            var chId = checkObj.id;
-            var chText = chId.split("&");
-            _taskList[parseInt(chText[1])-1].setFrom(_taskList[parseInt(zuText[2])-1].getFrom());
-            var chTo = new Date(((_taskList[parseInt(chText[1])-1].getFrom())/1000+(3600*_taskList[parseInt(chText[1])-1].getWorkload()))*1000);
-            _taskList[parseInt(chText[1])-1].setTo(chTo);
+            outWidth = parseInt(outObj.style.width);
 
-            zuNameObj.id =zuText[0]+"&" + (parseFloat(parseFloat(zuNameObj.style.width)/28)) +"&"+ zuText[2];
-            _taskList[parseInt(zuText[2])-1].setWordload(parseFloat(parseInt(zuNameObj.style.width)/28).toFixed(1));
-            _taskList[parseInt(zuText[2])-1].setTo(new Date(((_taskList[parseInt(zuText[2])-1].getFrom())/1000+(3600*_taskList[parseInt(zuText[2])-1].getWorkload()))*1000));
+            if(checkObj!=undefined){
+                checkObj.style.left = 0;
+
+                var chId = checkObj.id;
+                var chText = chId.split("&");
+                /*            var chTo = new Date(((_taskList[parseInt(chText[1])-1].getFrom())/1000+(3600*_taskList[parseInt(chText[1])-1].getWorkload()))*1000);
+                 _taskList[parseInt(chText[1])-1].setTo(chTo);*/
+
+                zuNameObj.id =zuText[0]+"&" + (parseFloat(parseFloat(zuNameObj.style.width)/28)) +"&"+ zuText[2];
+                _taskList[parseInt(zuText[2])-1].setFrom(_taskList[parseInt(chText[1])-1].getFrom());
+                _taskList[parseInt(zuText[2])-1].setWordload(parseFloat(parseInt(zuNameObj.style.width)/28));
+                _taskList[parseInt(zuText[2])-1].setTo(new Date(((_taskList[parseInt(zuText[2])-1].getFrom())/1000+(3600*_taskList[parseInt(zuText[2])-1].getWorkload()))*1000));
+            }else{
+
+            }
             Show();
         };
     };
@@ -1152,6 +1269,7 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
 
             zuNameObjRight = zuNameObj.offsetLeft + parseInt(zuNameObj.style.width);
             if(objRight>zuNameObjRight){
+                zutextObj.style.width = objRight - 25 + "px";
                 zuNameObj.style.width = objRight+"px";
                 outObj.style.width = zuNameObj.style.width;
             }
@@ -1167,7 +1285,6 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
                 var dragDayNum2 = parseInt(changeWidth / 14) + 1;
                 obj.style.width = parseInt(objWidth) + (14 * dragDayNum2) + "px";
                 barObj.style.width = parseInt(barWidth) + (14 * dragDayNum2) + "px";
-                textObj.style.width = parseInt(textWidth) + (14 * dragDayNum2) + "px";
 
                 //改变结束时间和工作量
                 var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo()) / 1000 + (1800 * (dragDayNum2))) * 1000);
@@ -1177,13 +1294,13 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
                 var dragDayNum2 = parseInt(Math.abs(changeWidth) / 14);
                 obj.style.width = parseInt(objWidth) - (dragDayNum2 * 14) + "px";
                 barObj.style.width = parseInt(barWidth) - (dragDayNum2 * 14) + "px";
-                textObj.style.width = parseInt(textWidth) + (14 * dragDayNum2) + "px";
 
                 //改变结束时间和工作量
                 var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo()) / 1000 - (1800 * (dragDayNum2))) * 1000);
                 _taskList[nowTaskNum].setTo(nowTaskTo);
                 _taskList[nowTaskNum].setWordload(wordloadCount(_taskList[nowTaskNum].getFrom(), _taskList[nowTaskNum].getTo()));
             }
+            textObj.style.width = _taskList[nowTaskNum].getWorkload()*28-25+"px";
 
             if(_taskList[nowTaskNum].getWorkload()<=0){
                 delete _taskList[nowTaskNum];
@@ -1265,6 +1382,7 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
 
                     zuNameObjRight = zuNameObj.offsetLeft + parseInt(zuNameObj.style.width);
                     if(objRight>zuNameObjRight){
+                        zutextObj.style.width = objRight - 25 + "px";
                         zuNameObj.style.width = objRight+"px";
                         outObj.style.width = zuNameObj.style.width;
                     }
@@ -1274,28 +1392,35 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
                     document.onmousemove = null;
                     document.onmouseup = null;
 
+                    var maxRight = 0;
+                    var mixLeft = 0;
+
                     var dragDayNum1 = 0;                 //左右拖动超过的块数
                     var nowTaskNum = parseInt(text[2])-1;
-                    if(nowLeft >  0){
+                    if(nowLeft >   0){
                         leftChange = nowLeft - formerLeft;
                         if(leftChange>=0){
                             dragDayNum1 = parseInt(leftChange / 14);         //保留整数部分
                             barObj.style.left = formerLeft + (dragDayNum1 * 14) + "px";
 
-                            //改变开始时间和结束时间
-                            var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
-                            var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
-                            _taskList[nowTaskNum].setFrom(nowTaskFrom);
-                            _taskList[nowTaskNum].setTo(nowTaskTo);
+                            if(_taskList[nowTaskNum]!=undefined){
+                                //改变开始时间和结束时间
+                                var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000+(1800*dragDayNum1))*1000);
+                                var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000+(1800*dragDayNum1))*1000);
+                                _taskList[nowTaskNum].setFrom(nowTaskFrom);
+                                _taskList[nowTaskNum].setTo(nowTaskTo);
+                            }
                         }else{
                             dragDayNum1 = parseInt(Math.abs(leftChange) / 14) + 1;
                             barObj.style.left = formerLeft - (dragDayNum1 * 14) + "px";
 
-                            //改变开始时间和结束时间
-                            var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
-                            var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
-                            _taskList[nowTaskNum].setFrom(nowTaskFrom);
-                            _taskList[nowTaskNum].setTo(nowTaskTo);
+                            if(_taskList[nowTaskNum]!=undefined){
+                                //改变开始时间和结束时间
+                                var nowTaskFrom = new Date(((_taskList[nowTaskNum].getFrom())/1000-(1800*dragDayNum1))*1000);
+                                var nowTaskTo = new Date(((_taskList[nowTaskNum].getTo())/1000-(1800*dragDayNum1))*1000);
+                                _taskList[nowTaskNum].setFrom(nowTaskFrom);
+                                _taskList[nowTaskNum].setTo(nowTaskTo);
+                            }
                         }
                     }
 
@@ -1303,37 +1428,57 @@ function dragZuSingle(obj,barObj,zuNameObj,dragObj,outObj,outItemNameObj,textObj
                     childs= outObj.childNodes;
                     for(var i = 1;i<childs.length;i++) {
                         if(childs[i].hasChildNodes()){
-                            maxRight = childs[i].offsetLeft + parseInt(childs[i].style.width);
-                            mixLeft = childs[i].offsetLeft;
+                            maxRight = parseInt(childs[i].style.left) + parseInt(childs[i].style.width);
+                            mixLeft = parseInt(childs[i].style.left);
                             var checkObj=childs[i];
                             break;
                         }
                     }
                     for(var i = 1;i<childs.length;i++) {
                         if(childs[i].hasChildNodes()){
-                            if (maxRight < childs[i].offsetLeft + parseInt(childs[i].style.width)) {
-                                maxRight = childs[i].offsetLeft + parseInt(childs[i].style.width);
+                            if (maxRight < parseInt(childs[i].style.left) + parseInt(childs[i].style.width)) {
+                                maxRight = parseInt(childs[i].style.left) + parseInt(childs[i].style.width);
                             }
-                            if (mixLeft > childs[i].offsetLeft) {
-                                mixLeft = childs[i].offsetLeft;
+                            if (mixLeft > parseInt(childs[i].style.left)) {
+                                mixLeft = parseInt(childs[i].style.left);
                                 checkObj = childs[i];
                             }
                         }
                     }
-                    zuNameObj.style.width = (maxRight)+"px";
+
+                    if(mixLeft == 0 && maxRight ==0){
+                        mixLeft = 0;
+                        maxRight = outWidth;
+                    }
+
+                    zuNameObj.style.width = (maxRight-mixLeft)+"px";
+                    zutextObj.style.width = maxRight-mixLeft - 25 + "px";
                     outObj.style.width = zuNameObj.style.width;
+                    outObj.style.left = parseInt(outObj.style.left) + mixLeft + "px";
+                    for(var i = 1;i<childs.length;i++) {
+                        if(childs[i].hasChildNodes()){
+                            childs[i].style.left = parseInt(childs[i].style.left) - mixLeft + "px";
+                        }
+                    }
                     zuNameObj.style.left = 0;
-                    checkObj.style.left = 0;
 
-                    var chId = checkObj.id;
-                    var chText = chId.split("&");
-                    _taskList[parseInt(chText[1])-1].setFrom(_taskList[parseInt(zuText[2])-1].getFrom());
-                    var chTo = new Date(((_taskList[parseInt(chText[1])-1].getFrom())/1000+(3600*_taskList[parseInt(chText[1])-1].getWorkload()))*1000);
-                    _taskList[parseInt(chText[1])-1].setTo(chTo);
+                    outWidth = parseInt(outObj.style.width);
 
-                    zuNameObj.id =zuText[0]+"&" + (parseFloat(parseFloat(zuNameObj.style.width)/28)) +"&"+ zuText[2];
-                    _taskList[parseInt(zuText[2])-1].setWordload(parseFloat(parseInt(zuNameObj.style.width)/28).toFixed(1));
-                    _taskList[parseInt(zuText[2])-1].setTo(new Date(((_taskList[parseInt(zuText[2])-1].getFrom())/1000+(3600*_taskList[parseInt(zuText[2])-1].getWorkload()))*1000));
+                    if(checkObj!=undefined){
+                        checkObj.style.left = 0;
+
+                        var chId = checkObj.id;
+                        var chText = chId.split("&");
+                        /*            var chTo = new Date(((_taskList[parseInt(chText[1])-1].getFrom())/1000+(3600*_taskList[parseInt(chText[1])-1].getWorkload()))*1000);
+                         _taskList[parseInt(chText[1])-1].setTo(chTo);*/
+
+                        zuNameObj.id =zuText[0]+"&" + (parseFloat(parseFloat(zuNameObj.style.width)/28)) +"&"+ zuText[2];
+                        _taskList[parseInt(zuText[2])-1].setFrom(_taskList[parseInt(chText[1])-1].getFrom());
+                        _taskList[parseInt(zuText[2])-1].setWordload(parseFloat(parseInt(zuNameObj.style.width)/28));
+                        _taskList[parseInt(zuText[2])-1].setTo(new Date(((_taskList[parseInt(zuText[2])-1].getFrom())/1000+(3600*_taskList[parseInt(zuText[2])-1].getWorkload()))*1000));
+                    }else{
+
+                    }
                     Show();
                 };
             };

@@ -175,7 +175,7 @@ input{
 .drag_gantt{
     position: relative;
     float: left;
-    width: 5px;
+    width: 4px;
     height: 30px;
     cursor: e-resize;
 }
@@ -191,7 +191,7 @@ input{
     /*text-align: center;*/
     font-size: 20px;
     /*border-radius: 100%;*/
-    width: 20px;
+    width: 18px;
     height: 30px;
     border-left: 1px solid black;
     border-right: 1px solid black;
@@ -228,10 +228,11 @@ input{
 .items_div{
     display: inline-block;
     position: relative;
-    background-color: #408080;
+    background-color: #FAFAD2;
     width: 0;
     height: 0;
     cursor: move;
+    border: 1px dotted black;
 }
 .zu_div{
     position: relative;

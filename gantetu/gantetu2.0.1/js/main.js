@@ -850,13 +850,13 @@ function dragBlockHour(obj,dragObj,barObj) {
             console.log(parseInt(barObj.style.left)<0);
 
             if(parseInt(barObj.style.left)<0) {
+                barObj.style.left = 0 + "px";
+                nowLeft = 1;
                 document.onmousemove = null;
-                document.onmouseup = null;
             }
         };
         //鼠标松开事件
         document.onmouseup = function (event) {
-            console.log(barObj.style.left);
             document.onmousemove = null;
             document.onmouseup = null;
 
@@ -966,6 +966,8 @@ function dragBlockDay(obj,dragObj,barObj) {
             nowLeft = parseInt(barObj.style.left);
 
             if(parseInt(barObj.style.left)<0){
+                barObj.style.left = 0 + "px";
+                nowLeft = 1;
                 document.onmousemove = null;
             }
         };
